@@ -2,9 +2,10 @@ const mongoose = require('mongoose');
 const chalk = require('chalk');
 const {DBName} = require('../constant/constant.js')
 
-const Dbconnection= async  () =>{
-  try {
 
+const Dbconnection=async  () =>{
+  try {
+     
     const connectioninfo =  await  mongoose.connect(`${process.env.DATABASE_URL} / ${DBName}`);
 
     console.log(
