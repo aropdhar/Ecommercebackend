@@ -67,7 +67,16 @@ const userschema = new Schema({
     },
     Role:{
         type:Array,
-
+    },
+    OTP:{
+        type: Number
     }
     
-})
+},
+{ timestamps: true }
+)
+
+const usermodel = mongoose.model('users' , userschema)
+
+
+module.exports = {usermodel}
