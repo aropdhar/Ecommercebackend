@@ -58,18 +58,20 @@ const userschema = new Schema({
         required: [true , "password Missing!!"],
         trim: true
     },
-    Policy:{
-        type: Boolean,
-        required: [true , "policy Missing"]
-    },
-    Acess_Token:{
-        type: String,
-    },
     Role:{
-        type:Array,
+        type:String,
+        enam: ['admin' , 'users' , 'marchant'],
+        default: 'users'
     },
     OTP:{
         type: Number
+    },
+    refreshtoken:{
+        type: String,
+
+    },
+    avatar:{
+        type: String
     }
     
 },
