@@ -19,13 +19,11 @@ const userschema = new Schema({
     Email_Adress:{
         type: String,
         unique: true,
-        required: true
+        required: [true , "EmailAddress Missing!!"]
     },
     Telephone:{
-        type: Number,
-        unique: true,
-        required: true,
-        max: [11 , "Max Telephone number 11"]
+        type: String,
+        required: [true, "Telephone Number Is missing"]
     },
     Adress1:{
         type: String,

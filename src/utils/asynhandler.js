@@ -5,7 +5,7 @@ const asynhandler = (fun = () =>{})=>{
         try {
             await fun(req , res , next);
         } catch (error) {
-            apiError(false , null , 400 , "asyhandler error" + error)
+           new apiError(false , null , 400 , "asyhandler error" + error)
         }
     }
 }
