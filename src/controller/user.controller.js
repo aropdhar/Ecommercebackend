@@ -60,14 +60,14 @@ const Createuser = asynhandler(async(req , res , next)=>{
 
     if(users){
 
-      const recentuser = await usermodel.find({ $or: [{FirstName: FirstName}, {Email_Adress: Email_Adress}] }).select("-Password -_id")
+      const recentuser = await usermodel.find({ $or: [{FirstName}, {Email_Adress}] }).select("-Password -_id")
 
-      return res.status(200).json(new apiResponse(true , users , 200 , null , "Registration Successfully!!"))
+      return res.status(200).json(new apiResponse(true , recentuser , 200 , null , "Registration Successfully!!"))
     }
   } 
   
   catch (error) {
-    console.log(error);
+    return res.status(400).json(new apiError(false , null , 404 , `Registration Controller Error: ${error}`))
     
   }
      
