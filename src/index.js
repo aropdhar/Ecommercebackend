@@ -6,5 +6,3 @@ const {Dbconnection} = require('./Dbconfiguration/Dbconfiguration.js')
 // connection database
 
 Dbconnection()
-
-
