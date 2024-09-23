@@ -76,12 +76,21 @@ const userschema = new Schema({
 )
 
 userschema.pre('save' , async function (next) {
-    
-  this.Password =  await bcrypt.hash(this.Password, 10);
-  next()
+
+    if(this.isModified(this.password)){
+
+        this.Password =  await bcrypt.hash(this.Password, 10);
+        next()
+    }
+    next()
 
 });
 
+userschema.methods.isValidatepassword = async (plainpassword)=>{
+   const passwordresult =  await  bcrypt.compare(plainpassword, this.password);
+
+   return passwordresult;
+}
 
 const usermodel = mongoose.model('users' , userschema)
 
