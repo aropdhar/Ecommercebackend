@@ -9,9 +9,7 @@ const Dbconnection= async  () =>{
     const connectioninfo =  await  mongoose.connect(`${process.env.DATABASE_URL}/${DBName}`);
 
     console.log(
-        chalk.blue.bgGreenBright.bold(`MongoDB Connected !! DB HOST !! ${
-          (await connectioninfo).connection.host
-        }`)            
+        chalk.blue.bgGreenBright.bold(`MongoDB Connected !! DB HOST !! ${(await connectioninfo).connection.host}`)            
       );    
     
 

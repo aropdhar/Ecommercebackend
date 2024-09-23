@@ -4,14 +4,17 @@
  * @param {( )} res 
  */
 
+
 const {apiError} = require('../utils/apiError.js');
 const {apiResponse} = require('../utils/apiResonse.js');
 const {asynhandler} = require('../utils/asynhandler.js');
-const {usermodel} = require('../Model/User.model.js')
+const {usermodel} = require('../Model/User.model.js');
+const {EmailChecker , passwordChecker} = require('../utils/AllChecker.js');
+
+
 
 const Createuser = asynhandler(async(req , res , next)=>{
   
-
   try {
     
     const {FirstName , LastName , Email_Adress , Telephone , Adress1 , City , Password} = req?.body
@@ -25,8 +28,8 @@ const Createuser = asynhandler(async(req , res , next)=>{
       return res.status(400).json(new apiError(false , null , 404 , "LastName Missing!!"))
     }
 
-    if(!Email_Adress){
-      return res.status(400).json(new apiError(false , null , 404 , "Email_Adress Missing!!"))
+    if(!Email_Adress || !EmailChecker(Email_Adress)){
+      return res.status(400).json(new apiError(false , null , 404 , "Email_Address Missing or invalid email!!"))
     }
 
     if(!Telephone){
@@ -39,8 +42,8 @@ const Createuser = asynhandler(async(req , res , next)=>{
     if(!City){
       return res.status(400).json(new apiError(false , null , 404 , "City Missing!!"))
     }
-    if(!Password){
-      return res.status(400).json(new apiError(false , null , 404 , "Password Missing!!"))
+    if(!Password || !passwordChecker(Password)){
+      return res.status(400).json(new apiError(false , null , 404 , "Password Missing or Minimum eight characters, at least one uppercase letter, one lowercase letter and one number:!!"))
     }
     
     // database information create
