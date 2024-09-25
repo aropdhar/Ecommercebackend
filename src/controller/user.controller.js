@@ -61,6 +61,10 @@ const Createuser = asynhandler(async(req , res , next)=>{
 
     }).save();
 
+    // const Token = await usermodel.generateAccesToken()
+    // console.log(Token);
+    // return;
+
     if(users){
 
       const recentuser = await usermodel.find({ $or: [{FirstName}, {Email_Adress}] }).select("-Password -_id")

@@ -8,12 +8,12 @@ const EmailChecker = (email = "arop.cit.bd@gmail.com" ) =>{
 
 }
 
-const passwordChecker = (password = "mern2306") =>{
+const passwordChecker = (password = "Mern@2306") =>{
     
-    const passwordregex = /"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"/;
-
+    const passwordregex =  /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
     const passwordtest = passwordregex.test(password)
- 
+    console.log(passwordtest);
+    
     return passwordtest;
     
 

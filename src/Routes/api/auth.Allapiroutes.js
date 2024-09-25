@@ -5,4 +5,5 @@ const _ = Router();
 
 _.route("/registration").post(Createuser)
 
+
 module.exports = _;
