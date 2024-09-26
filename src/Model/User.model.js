@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+
 
 
 const userschema = new Schema({
@@ -66,7 +65,7 @@ const userschema = new Schema({
     OTP:{
         type: Number
     },
-    refreshtoken:{
+    Token:{
         type: String,
     },
     avatar:{
@@ -77,39 +76,6 @@ const userschema = new Schema({
 { timestamps: true }
 )
 
-userschema.pre('save' , async function (next) {
-
-    if(this.isModified(this.password)){
-
-        this.Password =  await bcrypt.hash(this.Password, 10);
-        next()
-    }
-    next()
-
-});
-
-userschema.methods.isValidatepassword = async (plainpassword)=>{
-   const passwordresult =  await  bcrypt.compare(plainpassword, this.password);
-
-   return passwordresult;
-}
-
-
-userschema.methods.generateAccesToken = async () =>{
-
- const AccessToken = await  jwt.sign(
-    {
-
-        Email_Adress: this.Email_Adress,
-        Telephone: this.Telephone
-
-    }, process.env.ACCESS_TOKEN_SECRET, 
-    
-    { expiresIn: process.env.ACCESS_TOKEN_EXPIRE });
-
-    return AccessToken;
-
-}
 
 const usermodel = mongoose.model('users' , userschema)
 

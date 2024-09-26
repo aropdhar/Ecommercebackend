@@ -10,8 +10,13 @@ const {apiResponse} = require('../utils/apiResonse.js');
 const {asynhandler} = require('../utils/asynhandler.js');
 const {usermodel} = require('../Model/User.model.js');
 const {EmailChecker , passwordChecker} = require('../utils/AllChecker.js');
+const {bcryptpassword , generateAccesToken} = require('../helper/helper.js');
 
 
+const options = {
+  httpOnly: true,
+  secure: true,
+};
 
 const Createuser = asynhandler(async(req , res , next)=>{
   
@@ -54,22 +59,41 @@ const Createuser = asynhandler(async(req , res , next)=>{
       return res.status(400).json(new apiError(false , null , 404 , `${existuser[0]?.FirstName} Already Exist`))
      }
      
-  
+    // now make e password encrypt
+
+    const hashpassword = await bcryptpassword(Password)
+    
+
     const users = await new usermodel({
     
-      FirstName , LastName , Email_Adress , Telephone , Adress1 , City , Password
+      FirstName , 
+      LastName , 
+      Email_Adress , 
+      Telephone , 
+      Adress1 , 
+      City , 
+      Password: hashpassword,
 
     }).save();
 
-    // const Token = await usermodel.generateAccesToken()
-    // console.log(Token);
-    // return;
-
-    if(users){
+    const AccessToken = await generateAccesToken(Email_Adress , Telephone)
+    
+    
+    if(users || AccessToken){
+      
+      const settoken = await usermodel.findOneAndUpdate(
+        {_id: users._id}, 
+        {
+          $set: {Token: AccessToken}
+        }, 
+        {
+          new: true
+        }
+      );
 
       const recentuser = await usermodel.find({ $or: [{FirstName}, {Email_Adress}] }).select("-Password -_id")
 
-      return res.status(200).json(new apiResponse(true , recentuser , 200 , null , "Registration Successfully!!"))
+      return res.status(200).cookie("Token", AccessToken, options).json(new apiResponse(true , settoken, 200 , null , "Registration Successfully!!"))
     }
   } 
   
