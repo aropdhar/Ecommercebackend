@@ -12,6 +12,8 @@ const {usermodel} = require('../Model/User.model.js');
 const {EmailChecker , passwordChecker} = require('../utils/AllChecker.js');
 const {bcryptpassword , generateAccesToken} = require('../helper/helper.js');
 
+const {sendMailer} = require('../utils/sendmailer.js')
+
 
 const options = {
   httpOnly: true,
@@ -61,8 +63,9 @@ const Createuser = asynhandler(async(req , res , next)=>{
      
     // now make e password encrypt
 
-    const hashpassword = await bcryptpassword(Password)
+    const hashpassword = await bcryptpassword(Password);
     
+   //  database create
 
     const users = await new usermodel({
     
@@ -75,9 +78,14 @@ const Createuser = asynhandler(async(req , res , next)=>{
       Password: hashpassword,
 
     }).save();
+   
+    // access token create
 
     const AccessToken = await generateAccesToken(Email_Adress , Telephone)
     
+    // senderemail
+
+    await sendMailer()
     
     if(users || AccessToken){
       
