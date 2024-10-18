@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
+const {MakeTemplate} = require('../helper/Template.js')
 
-const sendMailer = async (Email_Adress) =>{
+const sendMailer = async (FirstName ,Email_Adress , otp) =>{
     try {
         
         const transporter = nodemailer.createTransport({
@@ -8,7 +9,7 @@ const sendMailer = async (Email_Adress) =>{
             secure: true, 
             auth: {
               user: process.env.HOST_MAIL,
-              pass: process.env.HOST_PASS,
+              pass: process.env.HOST_APP_PASSWORD,
             },
           });
           
@@ -18,7 +19,7 @@ const sendMailer = async (Email_Adress) =>{
             to: Email_Adress, 
             subject: "aropsutradhar202✔", 
             text: "Hello world?", 
-            html: "<b>Hello world?</b>",
+            html: MakeTemplate(FirstName , otp),
           });
         
          return info;

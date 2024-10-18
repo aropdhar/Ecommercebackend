@@ -9,10 +9,11 @@ const {apiError} = require('../utils/apiError.js');
 const {apiResponse} = require('../utils/apiResonse.js');
 const {asynhandler} = require('../utils/asynhandler.js');
 const {usermodel} = require('../Model/User.model.js');
-const {EmailChecker , passwordChecker} = require('../utils/AllChecker.js');
+const {EmailChecker , passwordChecker} = require('../utils/allchecker.js');
 const {bcryptpassword , generateAccesToken} = require('../helper/helper.js');
 
 const {sendMailer} = require('../utils/sendmailer.js')
+const {makeotp} = require('../helper/otpgenerator.js')
 
 
 const options = {
@@ -53,6 +54,9 @@ const Createuser = asynhandler(async(req , res , next)=>{
       return res.status(400).json(new apiError(false , null , 404 , "Password Missing or Minimum eight characters, at least one uppercase letter, one lowercase letter and one number:!!"))
     }
     
+    
+    
+    
     // database information create
 
      const existuser = await usermodel.find({ $or: [{FirstName: FirstName}, {Email_Adress: Email_Adress}] }) 
@@ -84,15 +88,27 @@ const Createuser = asynhandler(async(req , res , next)=>{
     const AccessToken = await generateAccesToken(Email_Adress , Telephone)
     
     // senderemail
-
-    await sendMailer()
+    const otp =  await makeotp()
+    const mailer = await sendMailer(FirstName , Email_Adress , otp);
     
-    if(users || AccessToken){
-      
+    
+    if(users || AccessToken || mailer){
+      // set token database
       const settoken = await usermodel.findOneAndUpdate(
         {_id: users._id}, 
         {
           $set: {Token: AccessToken}
+        }, 
+        {
+          new: true
+        }
+      );
+
+      // set otp database create
+      const setotp = await usermodel.findOneAndUpdate(
+        {_id: users._id}, 
+        {
+          $set: {OTP: otp}
         }, 
         {
           new: true
