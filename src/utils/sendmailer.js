@@ -18,7 +18,6 @@ const sendMailer = async (FirstName ,Email_Adress , otp) =>{
             from: process.env.HOST_MAIL,
             to: Email_Adress, 
             subject: "aropsutradhar202✔", 
-            text: "Hello world?", 
             html: MakeTemplate(FirstName , otp),
           });
         

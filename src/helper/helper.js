@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+// bcrypt password
 const bcryptpassword = async (password) =>{
    try {
     
@@ -12,6 +13,17 @@ const bcryptpassword = async (password) =>{
       
    }
 }
+
+// decoded password
+
+const decodedhashpassword = async (plainpassword , encryptedpassword)=>{
+   const decodedpassword = await bcrypt.compare(plainpassword, encryptedpassword);
+
+   return decodedpassword;
+   
+}
+
+// generate accesstoken
 
 const generateAccesToken = async (Email_Adress , Telephone) =>{
 
@@ -29,4 +41,4 @@ const generateAccesToken = async (Email_Adress , Telephone) =>{
    
 }
 
-module.exports = {bcryptpassword , generateAccesToken}
+module.exports = {bcryptpassword , generateAccesToken , decodedhashpassword}

@@ -10,16 +10,18 @@ const {apiResponse} = require('../utils/apiResonse.js');
 const {asynhandler} = require('../utils/asynhandler.js');
 const {usermodel} = require('../Model/User.model.js');
 const {EmailChecker , passwordChecker} = require('../utils/allchecker.js');
-const {bcryptpassword , generateAccesToken} = require('../helper/helper.js');
+const {bcryptpassword , generateAccesToken , decodedhashpassword} = require('../helper/helper.js');
 
 const {sendMailer} = require('../utils/sendmailer.js')
 const {makeotp} = require('../helper/otpgenerator.js')
-
+const bcrypt = require('bcrypt');
 
 const options = {
   httpOnly: true,
   secure: true,
 };
+
+// registration section
 
 const Createuser = asynhandler(async(req , res , next)=>{
   
@@ -129,4 +131,33 @@ const Createuser = asynhandler(async(req , res , next)=>{
 
 })
 
-module.exports = {Createuser}
+
+// login section
+
+const logincontroller = async (req , res)=>{
+  try {
+    
+    const {Email_Adress , Password} = req?.body;
+
+    if(!Email_Adress || !EmailChecker(Email_Adress)){
+      return res.status(400).json(new apiError(false , null , 404 , "Email_Address Missing or invalid email!!"))
+    }
+
+    if(!Password || !passwordChecker(Password)){
+      return res.status(400).json(new apiError(false , null , 404 , "Password Missing or Minimum eight characters, at least one uppercase letter, one lowercase letter and one number:!!"))
+    }
+    
+    const finduser = await usermodel.findOne({Email_Adress: Email_Adress})
+
+   const userpasswordisalid =  decodedhashpassword(Password , finduser?.Password)
+  
+   if(userpasswordisalid){
+    return res.status(200).json(new apiResponse(true , {FirstName: finduser?.FirstName}, 200 , null , "Login Successfully!!"))
+   }
+    
+    
+  } catch (error) {
+    return res.status(404).json(new apiError(false , null , 404 , `logincontroller error: ${error}`))
+  }
+}
+module.exports = {Createuser , logincontroller}
