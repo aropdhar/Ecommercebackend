@@ -17,21 +17,20 @@ const bcryptpassword = async (password) =>{
 // decoded password
 
 const decodedhashpassword = async (plainpassword , encryptedpassword)=>{
-   const decodedpassword = await bcrypt.compare(plainpassword, encryptedpassword);
+   const decodepassword = await bcrypt.compare(plainpassword, encryptedpassword);
 
-   return decodedpassword;
+   return decodepassword;
    
 }
 
 // generate accesstoken
 
-const generateAccesToken = async (Email_Adress , Telephone) =>{
+const generateAccesToken = async (Email_Adress) =>{
 
     const AccessToken = await  jwt.sign(
        {
 
            Email_Adress,
-           Telephone,
 
        }, process.env.ACCESS_TOKEN_SECRET, 
        

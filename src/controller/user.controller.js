@@ -85,29 +85,16 @@ const Createuser = asynhandler(async(req , res , next)=>{
 
     }).save();
    
-    // access token create
-
-    const AccessToken = await generateAccesToken(Email_Adress , Telephone)
-    
+  
     // senderemail
     const otp =  await makeotp()
     const mailer = await sendMailer(FirstName , Email_Adress , otp);
     
     
-    if(users || AccessToken || mailer){
-      // set token database
-      const settoken = await usermodel.findOneAndUpdate(
-        {_id: users._id}, 
-        {
-          $set: {Token: AccessToken}
-        }, 
-        {
-          new: true
-        }
-      );
+    if(users || mailer){
 
       // set otp database create
-      const setotp = await usermodel.findOneAndUpdate(
+       await usermodel.findOneAndUpdate(
         {_id: users._id}, 
         {
           $set: {OTP: otp}
@@ -117,9 +104,9 @@ const Createuser = asynhandler(async(req , res , next)=>{
         }
       );
 
-      const recentuser = await usermodel.find({ $or: [{FirstName}, {Email_Adress}] }).select("-Password -_id")
+      const recentuser = await usermodel.find({ $or: [{FirstName}, {Email_Adress}] }).select("-Password")
 
-      return res.status(200).cookie("Token", AccessToken, options).json(new apiResponse(true , settoken, 200 , null , "Registration Successfully!!"))
+      return res.status(200).json(new apiResponse(true , recentuser, 200 , null , "Registration Successfully!!"))
     }
   } 
   
@@ -149,15 +136,51 @@ const logincontroller = async (req , res)=>{
     
     const finduser = await usermodel.findOne({Email_Adress: Email_Adress})
 
-   const userpasswordisalid =  decodedhashpassword(Password , finduser?.Password)
+   const userpasswordisvalid =  decodedhashpassword(Password , finduser?.Password)
   
-   if(userpasswordisalid){
-    return res.status(200).json(new apiResponse(true , {FirstName: finduser?.FirstName}, 200 , null , "Login Successfully!!"))
+   //  generate access token
+
+   const token = await generateAccesToken(Email_Adress);
+     
+
+   if(userpasswordisvalid){
+    return res.status(200).cookie("acesstoken" , token , options).json(new apiResponse(true , {FirstName: finduser?.FirstName} , 200 , null , "Login Successfully!!"))
    }
-    
+      
     
   } catch (error) {
     return res.status(404).json(new apiError(false , null , 404 , `logincontroller error: ${error}`))
   }
 }
-module.exports = {Createuser , logincontroller}
+
+
+// otp generatormatch section
+
+const otpmatchcontroller = async (req , res)=>{
+  
+  try {
+    
+    const {Email_Adress , OTP} = req?.body;
+
+    if(!Email_Adress || !OTP){
+      return res.status(400).json(new apiError(false , null , 404 , "Email_Address Missing or invalid otp!!"))
+    }
+    
+    const checkemailexistindb = await usermodel.findOne({$or: [{Email_Adress: Email_Adress} , {OTP: OTP}] })
+
+    if(checkemailexistindb){
+      checkemailexistindb.OTP = null;
+      checkemailexistindb.save();
+
+      return res.status(200).json(new apiResponse(true , 200 , null , "OTP Verfied"));
+    }
+    
+
+
+  } catch (error) {
+    return res.status(404).json(new apiError(false , null , 404 , `otpmatch controller controller error: ${error}`))
+  }
+
+}
+
+module.exports = {Createuser , logincontroller ,otpmatchcontroller}
