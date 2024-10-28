@@ -65,6 +65,13 @@ const userschema = new Schema({
     OTP:{
         type: Number
     },
+    resetOTP: {
+        type: Number,
+    },
+    userIsVerifid: {
+        type: Boolean,
+        default: false,
+    },
     Token:{
         type: String,
     },
