@@ -281,7 +281,9 @@ const changerolecontroller = async (req , res)=>{
            return res.status(200).json(new apiResponse(true,isexistuser,200,null,"Role updated sucessfully you are in marchant"));
         }
      }else{
+
        return res.status(200).json(new apiResponse(true , isexistuser?.FirstName , 200 , null , "you are already marchant"));
+       
      }
      
 
