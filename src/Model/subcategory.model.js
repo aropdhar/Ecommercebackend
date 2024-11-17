@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const categoryschema = new Schema({
+
+const subcategory = new Schema({
     title:{
         type: String,
         required: [true , "category missing"],
@@ -16,16 +17,9 @@ const categoryschema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "product"
     },
-    isActive:{
-        type: Boolean,
-        default: false 
-    },
-    subcategory: [{
-        type: Schema.Types.ObjectId,
-        ref: "subcategory"
-    }]
-});
 
-const categorymodel = mongoose.model("category" , categoryschema)
+})
 
-module.exports = {categorymodel}
+const subcategorymodel = mongoose.model('subcategory', subcategory)
+
+module.exports = {subcategorymodel}
