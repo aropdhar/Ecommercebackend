@@ -17,6 +17,11 @@ const subcategory = new Schema({
         type: Schema.Types.ObjectId,
         ref: "product"
     },
+    category: [{
+        type: Schema.Types.ObjectId,
+        ref: "category",
+        required: [true , "category missing"],
+    }]
 
 })
 
