@@ -10,7 +10,7 @@ _.use(process.env.BASE_URL , authRoutes)
 _.use(process.env.BASE_URL , categoryRoutes)
 _.use(process.env.BASE_URL , subcategoryroutes)
 _.use(process.env.BASE_URL , (req , res)=>{
-    res.status(400).json( new apiError(false , null , 400 , "Api Routes invalid"))
+    res.status(400).json( new apiError(false , null , 400 , "Api Routes invalid"));
 })
 
 

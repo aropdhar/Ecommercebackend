@@ -26,7 +26,7 @@ const subcategoryController = async (req , res)=>{
         // );
         
         const findcategorybyid = await categorymodel.findById(category);
-        findcategorybyid.subcategory.push(creatsubcategory._id)
+        findcategorybyid.subcategory.push(creatsubcategory._id);
         findcategorybyid.save()
 
         return res.status(200).json(new apiResponse(true,creatsubcategory,200,null,"Sub Category Created sucesfully!!!"));
@@ -62,7 +62,7 @@ const deletesubcategory = async (req , res)=>{
       
        const {id} = req.params;
 
-       const deleteitem = await subcategorymodel.findOne({_id: id});
+       const deleteitem = await subcategorymodel.findOneAndDelete({_id: id});
 
        if(deleteitem){
           const searchcatgory = await categorymodel.findById(deleteitem.category);
@@ -83,4 +83,29 @@ const deletesubcategory = async (req , res)=>{
     }
 }
 
-module.exports = {subcategoryController , getAllsubcategory , deletesubcategory}
+
+// single sub category
+
+const singlesubcategory = async(req , res)=>{
+   
+   try {
+      
+      const {id} = req.params;
+
+      const singlesubcategory = await subcategorymodel.findById(id).populate("category");
+
+      if(singlesubcategory){
+         
+         return res.status(200).json(new apiResponse(true,singlesubcategory,200,null,"single Sub Category retrive sucesfully!!!"));
+
+      }else{
+         return res.status(400).json(new apiError(false , null , 404 , `singlesubcategory  Error`))
+      }
+
+   } catch (error) {
+      return res.status(400).json(new apiError(false , null , 404 , `singlesubcategory Controller Error: ${error}`))
+   }
+
+}
+
+module.exports = {subcategoryController , getAllsubcategory , deletesubcategory , singlesubcategory}

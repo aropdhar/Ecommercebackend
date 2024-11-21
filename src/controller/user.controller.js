@@ -136,7 +136,7 @@ const logincontroller = async (req , res)=>{
     
     const finduser = await usermodel.findOne({Email_Adress: Email_Adress})
 
-   const userpasswordisvalid =  decodedhashpassword(Password , finduser?.Password)
+   const userpasswordisvalid =  decodedhashpassword(Password , finduser?.Password);
   
    //  generate access token
 
@@ -144,7 +144,7 @@ const logincontroller = async (req , res)=>{
      
 
    if(userpasswordisvalid){
-    return res.status(200).cookie("acesstoken" , token , options).json(new apiResponse(true , {FirstName: finduser?.FirstName} , 200 , null , "Login Successfully!!"))
+    return res.status(200).cookie("acesstoken" , token , options).json(new apiResponse(true , {FirstName: finduser?.FirstName} , 200 , null , "Login Successfully!!"));
    }
      
     
@@ -199,7 +199,6 @@ const Forgotpasswordcontroller = async (req , res)=>{
       const otp =  await makeotp()
       await sendMailer(emailexist?.FirstName , Email_Adress , otp);
       
-
       emailexist.resetOTP = otp;
       emailexist.save()
 

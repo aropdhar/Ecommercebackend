@@ -17,7 +17,7 @@ const sendMailer = async (FirstName ,Email_Adress , otp) =>{
           const info = await transporter.sendMail({
             from: process.env.HOST_MAIL,
             to: Email_Adress, 
-            subject: "aropsutradhar202✔", 
+            subject: "E-Commerce✔", 
             html: MakeTemplate(FirstName , otp),
           });
         
