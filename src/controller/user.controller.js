@@ -134,7 +134,7 @@ const logincontroller = async (req , res)=>{
       return res.status(400).json(new apiError(false , null , 404 , "Password Missing or Minimum eight characters, at least one uppercase letter, one lowercase letter and one number:!!"))
     }
     
-    const finduser = await usermodel.findOne({Email_Adress: Email_Adress})
+    const finduser = await usermodel.findOne({Email_Adress: Email_Adress});
 
    const userpasswordisvalid =  decodedhashpassword(Password , finduser?.Password);
   

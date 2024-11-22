@@ -14,6 +14,10 @@ const passwordChecker = (password = "Mern@2306") =>{
     return passwordtest;
     
 }
- 
 
-module.exports = {EmailChecker , passwordChecker}
+const phonenumberChecker = (PhoneNumber)=>{
+    const bdPhoneNumberRegex = /^(?:\+?88)?01[3-9]\d{8}$/;
+    return bdPhoneNumberRegex.test(PhoneNumber)
+}
+
+module.exports = {EmailChecker , passwordChecker , phonenumberChecker}
