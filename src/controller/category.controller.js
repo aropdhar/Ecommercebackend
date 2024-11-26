@@ -96,7 +96,7 @@ const approvedcategory = async (req , res)=>{
 
         // search item in the database and find one email owner is an admin
 
-        const searchuser = await usermodel.findOne({ Email_Adress: email})
+        const searchuser = await usermodel.findOne({ Email_Adress: email}) 
         
         if(searchuser?.Role !== 'admin'){
             return res.status(400).json(new apiError(false , null , 404 , `only admin can approve category access`))
