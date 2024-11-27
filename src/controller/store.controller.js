@@ -98,12 +98,12 @@ const updatemarchant =  async (req , res)=>{
 
         const updatemarchant =  await storemodel.findOneAndUpdate({_id: id} , {
 
-         ...(email && email),
-         ...(phoneNumber && phoneNumber),
-         ...(storename && storename),
-         ...(users && users)
+         ...(email && {email}),
+         ...(phoneNumber && {phoneNumber}),
+         ...(storename && {storename}),
+         ...(users && {users})
 
-        } , {new: true})
+        } , {new: true}).populate("users")
 
         if(updatemarchant){
             return res.status(200).json(new apiResponse(true,updatemarchant,200,null,"Update Marchant Successfully!!!"));

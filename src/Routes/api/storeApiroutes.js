@@ -6,7 +6,7 @@ const {createmarchant , getallmarchant , singlemarchant , updatemarchant} = requ
 _.route("/becomemarchant").post(createmarchant)
 _.route("/getallmarchant").get(getallmarchant)
 _.route("/singlemarchant/:id").get(singlemarchant)
-_.route("/updatemarchant/:id").put(updatemarchant)
+_.route("/updatemarchant/:id").patch(updatemarchant)
 
 
 module.exports = _;
