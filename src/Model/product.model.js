@@ -19,6 +19,10 @@ const productSchema = new Schema({
         ref: "category",
         required: true
     },
+    subcategory: {
+        type: Schema.Types.ObjectId,
+        ref: "subcategory",
+    },
 
     price: {
         type: String,
@@ -48,9 +52,10 @@ const productSchema = new Schema({
        ref: "marchant",
        required: true
     },
-    image:[{
-        type: String
-    }]
+    image:{
+        type: String,
+        required: true
+    }
 
 
 },
