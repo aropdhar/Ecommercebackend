@@ -1,3 +1,4 @@
+const { productuser } = require('../Model/product.model.js');
 const {apiError} = require('../utils/apiError.js');
 const {apiResponse} = require('../utils/apiResonse.js');
 const { uploadcloudinary } = require('../utils/cloudinary.js');
@@ -25,8 +26,21 @@ const productcontroller = async (req , res)=>{
       return res.status(400).json(new apiError(false , null , 404 , `image missing!!`))
      }
 
-    const cloudinary = await uploadcloudinary(image[0].path)
-    console.log(cloudinary);
+    const imageinfo = await uploadcloudinary(image[0].path)
+    
+    const saveproduct = await new productuser({
+      ...req.body,
+      image: imageinfo?.secure_url
+
+    }).save()
+    
+
+    if(saveproduct){
+      return res.status(200).json(new apiResponse(true,saveproduct,200,null,"Product Save Successfully!!!"));
+    }
+    else{
+      return res.status(400).json(new apiError(false , null , 404 , `Failed To product Upload`))
+    }
     
      
    } catch (error) {

@@ -10,17 +10,20 @@
 });
 
 const uploadcloudinary = async (localfilepath = 'public\\temp\\chatting ui.png') =>{
+
     try {
         const uploadResult = await cloudinary.uploader
         .upload(
             localfilepath || 'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg', {
             }
         )
-        console.log(uploadResult); 
 
         fs.unlinkSync(`${localfilepath}` , (err)=>{
             console.log("image unlinksync error" , err);   
         })
+
+        return uploadResult;
+        
     } catch (error) {
         console.log("Cloudinary Upload Error:" , error);
         
