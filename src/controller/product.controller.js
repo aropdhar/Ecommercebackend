@@ -2,7 +2,11 @@ const { productuser } = require('../Model/product.model.js');
 const {apiError} = require('../utils/apiError.js');
 const {apiResponse} = require('../utils/apiResonse.js');
 const { uploadcloudinary } = require('../utils/cloudinary.js');
+const NodeCache = require( "node-cache" );
+const myCache = new NodeCache();
 
+
+// product upload 
 
 const productcontroller = async (req , res)=>{
    try {
@@ -25,6 +29,12 @@ const productcontroller = async (req , res)=>{
      if(!image){
       return res.status(400).json(new apiError(false , null , 404 , `image missing!!`))
      }
+    
+    const isexistproduct = await productuser.find({name: req.body.name});
+
+    if(isexistproduct?.length){
+      return res.status(400).json(new apiError(false , null , 404 , `${req.body.name} Product Already Exist`))
+    }
 
     const imageinfo = await uploadcloudinary(image[0].path)
     
@@ -36,6 +46,9 @@ const productcontroller = async (req , res)=>{
     
 
     if(saveproduct){
+      // delete the previous cached
+      myCache.del('getAllProduct')
+
       return res.status(200).json(new apiResponse(true,saveproduct,200,null,"Product Save Successfully!!!"));
     }
     else{
@@ -48,4 +61,72 @@ const productcontroller = async (req , res)=>{
    }
 }
 
-module.exports = {productcontroller}
+// get all product
+
+const getAllProduct = async(req , res)=>{
+  try {
+    
+     let  value = myCache.get("getAllProduct");
+
+      if ( value == undefined ){    
+        const getAllProduct = await productuser.find({});
+    
+        if(getAllProduct){
+    
+          // cached product
+    
+          myCache.set( "getAllProduct",  JSON.stringify(getAllProduct));
+    
+          return res.status(200).json(new apiResponse(true,getAllProduct,200,null,"Product Save Successfully!!!"));
+        }
+      }else{
+        return res.status(200).json(new apiResponse(true,JSON.parse(value),200,null,"Product Save Successfully!!!"));
+      }
+
+
+    return res.status(400).json(new apiError(false , null , 404 , `getAllProduct not Found`));
+
+  } catch (error) {
+    return res.status(400).json(new apiError(false , null , 404 , `getAllProduct Controller Error: ${error}`))
+  }
+}
+
+// product update
+
+const updateproduct = async (req , res)=>{
+   try {
+    
+     const {id} = req.params;
+     const image = req.files?.image
+     
+     
+     let updatedProduct = await productuser.findById(id);
+     let updateProductObj = {}
+     if (image) {
+         await deleteCloudinaryAssets(updatedProduct?.image);
+         const imageUrl = await uploadcloudinary(image)
+         updateProductObj = { ...req.body, image: imageUrl };
+
+     } else {
+         updateProductObj = { ...req.body }
+     }
+
+
+     const updateproduct = await productuser.findOneAndUpdate({_id: id} ,
+      {...updateProductObj},
+      {new: true}
+     ) 
+
+     if(updateproduct){
+      return res.status(200).json(new apiResponse(true,updateproduct,200,null,"Product Update Successfully!!!"));
+     }
+     else{
+      return res.status(400).json(new apiError(false , null , 404 , `updateproduct failed`))
+     }
+
+   } catch (error) {
+    return res.status(400).json(new apiError(false , null , 404 , `updateproduct Controller Error: ${error}`))
+   }
+}
+
+module.exports = {productcontroller , getAllProduct , updateproduct}
