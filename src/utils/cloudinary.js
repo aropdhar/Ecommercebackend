@@ -12,17 +12,26 @@
 const uploadcloudinary = async (localfilepath = 'public\\temp\\chatting ui.png') =>{
 
     try {
-        const uploadResult = await cloudinary.uploader
-        .upload(
-            localfilepath || 'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg', {
-            }
-        )
-
-        fs.unlinkSync(`${localfilepath}` , (err)=>{
-            console.log("image unlinksync error" , err);   
-        })
-
-        return uploadResult;
+        let secure_link = []
+        for(let imagepath of localfilepath){
+            const uploadResult = await cloudinary.uploader
+            .upload(
+                imagepath?.path || 'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg', {
+                }
+            )
+    
+            fs.unlinkSync(`${imagepath?.path}` , (err)=>{
+                console.log("image unlinksync error" , err);   
+            })
+    
+          secure_link.push(uploadResult?.secure_url);
+            
+            
+        }
+        
+        return secure_link;
+        
+       
         
     } catch (error) {
         console.log("Cloudinary Upload Error:" , error);
@@ -31,4 +40,24 @@ const uploadcloudinary = async (localfilepath = 'public\\temp\\chatting ui.png')
 
 }
 
-module.exports = {uploadcloudinary}
+// delete cloudinary
+
+const deleteCloudinaryAssets = async(imagepath)=>{
+    try {
+         
+        for(let cloudinarName of imagepath){
+            const allarr = (cloudinarName.split('/'));
+            console.log(allarr[allarr?.length - 1].split('.')[0]);
+            cloudinary.v2.api
+            .delete_resources([imagepath] || ['entkozxzcn7zjhx6bjdb'], 
+                { type: 'upload', resource_type: 'image' })
+        }
+        
+         
+ 
+    } catch (error) {
+        console.log("delete Cloudinary Error:" , error);
+    }
+}
+
+module.exports = {uploadcloudinary , deleteCloudinaryAssets}

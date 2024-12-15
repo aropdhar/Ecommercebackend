@@ -1,7 +1,7 @@
 const { productuser } = require('../Model/product.model.js');
 const {apiError} = require('../utils/apiError.js');
 const {apiResponse} = require('../utils/apiResonse.js');
-const { uploadcloudinary } = require('../utils/cloudinary.js');
+const { uploadcloudinary , deleteCloudinaryAssets} = require('../utils/cloudinary.js');
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache();
 
@@ -13,7 +13,7 @@ const productcontroller = async (req , res)=>{
     
     //  const {name , description , category , price , discountPrice , rating , review , owner , storeid} = req?.body;
      
-     const nonrequireitem = ["discountPrice" , "rating" , "review"]
+     const nonrequireitem = ["discountPrice" , "rating" , "review" , "subcategory"]
 
      for(let key in req.body){
         
@@ -36,11 +36,11 @@ const productcontroller = async (req , res)=>{
       return res.status(400).json(new apiError(false , null , 404 , `${req.body.name} Product Already Exist`))
     }
 
-    const imageinfo = await uploadcloudinary(image[0].path)
+    const imageinfo = await uploadcloudinary(image)
     
     const saveproduct = await new productuser({
       ...req.body,
-      image: imageinfo?.secure_url
+      image: [...imageinfo]
 
     }).save()
     
@@ -69,7 +69,7 @@ const getAllProduct = async(req , res)=>{
      let  value = myCache.get("getAllProduct");
 
       if ( value == undefined ){    
-        const getAllProduct = await productuser.find({});
+        const getAllProduct = await productuser.find({}).populate(["category" , "subcategory" , "owner" , "storeid"]);
     
         if(getAllProduct){
     
@@ -98,18 +98,20 @@ const updateproduct = async (req , res)=>{
     
      const {id} = req.params;
      const image = req.files?.image
-     
-     
-     let updatedProduct = await productuser.findById(id);
-     let updateProductObj = {}
-     if (image) {
-         await deleteCloudinaryAssets(updatedProduct?.image);
-         const imageUrl = await uploadcloudinary(image)
-         updateProductObj = { ...req.body, image: imageUrl };
+     let imageinfo;
 
-     } else {
-         updateProductObj = { ...req.body }
+     if(image){
+       const imageinfo = await uploadcloudinary(image)
      }
+     
+     const updateProductObj = { ...req.body, image: imageinfo };
+     let updatedProduct = await productuser.findById(id);
+     
+     if(updatedProduct?.image){
+       await deleteCloudinaryAssets(updatedProduct?.image)
+     }
+     
+     return
 
 
      const updateproduct = await productuser.findOneAndUpdate({_id: id} ,
