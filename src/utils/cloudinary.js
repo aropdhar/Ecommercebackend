@@ -47,10 +47,12 @@ const deleteCloudinaryAssets = async(imagepath)=>{
          
         for(let cloudinarName of imagepath){
             const allarr = (cloudinarName.split('/'));
-            console.log(allarr[allarr?.length - 1].split('.')[0]);
-            cloudinary.v2.api
-            .delete_resources([imagepath] || ['entkozxzcn7zjhx6bjdb'], 
+            const cloudimagename = (allarr[allarr?.length - 1].split('.')[0]);
+            const deleteitem = await cloudinary.api
+            .delete_resources(cloudimagename || ['entkozxzcn7zjhx6bjdb'], 
                 { type: 'upload', resource_type: 'image' })
+            console.log("deleteitem" , deleteitem);
+            
         }
         
          

@@ -98,32 +98,26 @@ const updateproduct = async (req , res)=>{
     
      const {id} = req.params;
      const image = req.files?.image
-     let imageinfo;
+      
+     let updatedProduct = await productuser.findById(id);
+     let updatedProductobj = {};
 
      if(image){
-       const imageinfo = await uploadcloudinary(image)
+       await deleteCloudinaryAssets(updatedProduct?.image);
+       const imageurl = await uploadcloudinary(image);
+       updatedProductobj = { ...req.body, image: imageurl };
+     }else{
+       updatedProductobj = {...req.body}
      }
      
-     const updateProductObj = { ...req.body, image: imageinfo };
-     let updatedProduct = await productuser.findById(id);
      
-     if(updatedProduct?.image){
-       await deleteCloudinaryAssets(updatedProduct?.image)
-     }
-     
-     return
-
-
      const updateproduct = await productuser.findOneAndUpdate({_id: id} ,
-      {...updateProductObj},
+      {...updatedProductobj},
       {new: true}
      ) 
-
+     
      if(updateproduct){
       return res.status(200).json(new apiResponse(true,updateproduct,200,null,"Product Update Successfully!!!"));
-     }
-     else{
-      return res.status(400).json(new apiError(false , null , 404 , `updateproduct failed`))
      }
 
    } catch (error) {
@@ -131,4 +125,42 @@ const updateproduct = async (req , res)=>{
    }
 }
 
-module.exports = {productcontroller , getAllProduct , updateproduct}
+// single product controller 
+
+const singleproduct = async (req , res)=>{
+  try {
+    
+    const {id} = req.params;
+    const singleproduct = await productuser.findById(id).populate(["category" , "subcategory" , "owner" , "storeid"]);
+
+    if(singleproduct){
+      return res.status(200).json(new apiResponse(true,singleproduct,200,null,"Single Product Successfully!!!"));
+    }
+
+  } catch (error) {
+    return res.status(400).json(new apiError(false , null , 404 , `singleproduct Controller Error: ${error}`))
+  }
+}
+
+// search product 
+
+const searchproductcontroller = async(req , res)=>{
+   try {
+    
+      const {name} = req.query;
+
+      const searchproduct = await productuser.find({name: name}).populate(["category" , "subcategory" , "owner" , "storeid"]);
+      
+      if(searchproduct?.length){
+        return res.status(200).json(new apiResponse(true,searchproduct,200,null,"Single Product Successfully!!!"));
+      }else{
+        return res.status(400).json(new apiError(false , null , 404 , `product Not Found`))
+      }
+      
+
+   } catch (error) {
+    return res.status(400).json(new apiError(false , null , 404 , `searchproduct controller Error: ${error}`))
+   }
+}
+
+module.exports = {productcontroller , getAllProduct , updateproduct , singleproduct , searchproductcontroller}
