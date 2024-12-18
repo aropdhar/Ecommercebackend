@@ -3,6 +3,6 @@ const {Router} = express;
 const _ = Router();
 const {adminscontroller} = require('../../controller/Admins.controller.js')
 
-_.route("/admin").post(adminscontroller)
+_.route("/admin/signup").post(adminscontroller)
 
 module.exports = _;
