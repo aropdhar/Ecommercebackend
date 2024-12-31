@@ -1,6 +1,6 @@
 const {apiError} = require('../utils/apiError.js');
 const {apiResponse} = require('../utils/apiResonse.js');
-const {adminsmodel} = require('../Model/admins/amins.model.js')
+const {adminsmodel} = require('../Model/admins/admins.model.js')
 const {bcryptpassword} = require('../helper/helper.js')
 
 const adminscontroller = async (req , res)=>{
