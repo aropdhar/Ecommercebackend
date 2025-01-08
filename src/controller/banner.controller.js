@@ -41,7 +41,7 @@ const bannerController = async(req , res)=>{
    }
 }
 
-// getallbanner controller
+// get all banner controller
 
 const getAllBannercontroller = async(req,res)=>{
     try {
@@ -56,4 +56,41 @@ const getAllBannercontroller = async(req,res)=>{
     }
 }
 
-module.exports = {bannerController , getAllBannercontroller}
+// update banner controller 
+
+const updateBanner = async(req,res)=>{
+    try {
+
+        const {id} = req.params;
+        const image = req.files.image;
+        
+        if(!image){
+            return res.status(400).json(new apiError(false , null , 404 , `Image Missing !!`))
+        }
+
+        const bannerUpdate = await bannerModel.findById(id);
+        const deletedItem =   await deleteCloudinaryAssets(bannerUpdate.image);
+
+        const newImage = await uploadcloudinary(image);
+        const updateItem = await bannerModel.findOneAndUpdate({_id: id},
+            {
+                ...req.body,
+                image: newImage[0],
+            },
+            {
+                new: true
+            }
+        );
+
+        if(updateItem){
+            return res.status(200).json(new apiResponse(true , updateItem, 200 , null , "Banner Updated Successfully!!"))
+        }
+
+
+    } catch (error) {
+        return res.status(400).json(new apiError(false , null , 404 , `updateBanner controller  Error: ${error}`))
+    }
+}
+
+
+module.exports = {bannerController , getAllBannercontroller , updateBanner}
