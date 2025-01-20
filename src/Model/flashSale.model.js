@@ -8,8 +8,8 @@ const flashsaleSchema = new Schema({
         require: true
     },
     offerDate:{
-        type: Number,
-        require: true
+        type: Types.ObjectId,
+        ref: "offerdate"
     }
 })
 

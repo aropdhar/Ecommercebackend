@@ -21,7 +21,8 @@ const flashsalecontroller = async(req , res)=>{
     // flashsale save database
 
         const flashsaleSave = await new flashsaleModel({
-            productId , offerDate
+            productId , 
+            offerDate: offerDate || 1
         }).save()
 
         if(flashsaleSave){
@@ -41,7 +42,7 @@ const getAllFlashsaleProduct = async(req , res)=>{
             const getAllFlashSaleProduct = await flashsaleModel.find({}).populate({
                 path: 'productId',
                 select: "-description -category -subcategory -owner -storeid"
-            }).lean()
+            }).populate("offerDate").lean()
 
             if(getAllFlashSaleProduct){
                 return res.status(200).json(new apiResponse(true,getAllFlashSaleProduct,200,null,"getAllFlashSale Product Successfully!!!"));
