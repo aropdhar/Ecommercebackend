@@ -32,7 +32,7 @@ const Createuser = asynhandler(async(req , res , next)=>{
      
     if(!FirstName){
       return  res.status(400).json(new apiError(false , null , 404 , "FirstName Missing!!"))
-    }
+    } 
 
     if(!LastName){
       return res.status(400).json(new apiError(false , null , 404 , "LastName Missing!!"))

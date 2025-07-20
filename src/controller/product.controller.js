@@ -131,7 +131,10 @@ const singleproduct = async (req , res)=>{
   try {
     
     const {id} = req.params;
-    const singleproduct = await productuser.findById(id).populate(["category" , "subcategory" , "owner" , "storeid"]);
+   
+    const singleproduct = await productuser.findOne({_id: id}).populate(["category" , "subcategory" , "owner" , "storeid"]);
+    
+    
 
     if(singleproduct){
       return res.status(200).json(new apiResponse(true,singleproduct,200,null,"Single Product Successfully!!!"));
