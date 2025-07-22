@@ -4,7 +4,7 @@ const {apiResponse} = require('../utils/apiResonse.js');
 const { uploadcloudinary , deleteCloudinaryAssets} = require('../utils/cloudinary.js');
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache();
-
+const {categorymodel} = require('../Model/category.model.js');
 
 // product upload 
 
@@ -46,6 +46,14 @@ const productcontroller = async (req , res)=>{
     
 
     if(saveproduct){
+     
+      // now push the product id into categorymodel
+
+      const category = await categorymodel.findById(req.body.category);
+      category.product.push(saveproduct._id);
+      await category.save();
+      
+
       // delete the previous cached
       myCache.del('getAllProduct')
 
@@ -166,4 +174,30 @@ const searchproductcontroller = async(req , res)=>{
    }
 }
 
-module.exports = {productcontroller , getAllProduct , updateproduct , singleproduct , searchproductcontroller}
+// deleted product
+
+const deleteproductcontroller = async(req , res)=>{
+  try {
+     const {id} = req.params;
+     const deletedproduct = await productuser.findOneAndDelete({_id: id});
+     
+
+    if(deletedproduct){
+
+      const deleteitem = await deleteCloudinaryAssets(deletedproduct?.image);
+      const category = await categorymodel.findById(deletedproduct.category);
+
+      category.product.pull(deleteitem._id)
+
+      await category.save()
+
+      return res.status(200).json(new apiResponse(true,deletedproduct,200,null,"delete Product Successfully!!!"));
+    }
+
+  } catch (error) {
+    return res.status(400).json(new apiError(false , null , 404 , `product Not Found`))
+  }
+
+}
+
+module.exports = {productcontroller , getAllProduct , updateproduct , singleproduct , searchproductcontroller , deleteproductcontroller}

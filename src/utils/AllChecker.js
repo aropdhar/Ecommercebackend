@@ -4,7 +4,6 @@ const EmailChecker = (email = "arop.cit.bd@gmail.com" ) =>{
     const emailtest = emailregex.test(email)
     return emailtest;
     
-
 }
 
 const passwordChecker = (password = "Mern@2306") =>{

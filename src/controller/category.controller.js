@@ -66,7 +66,9 @@ const singlecategory = async (req , res)=>{
         
         const {id} = req.params;
 
-        const searchitem = await categorymodel.findById({_id: id});
+        const searchitem = await categorymodel.findById({_id: id}).populate({
+            path: "product"
+        });
 
         if(!searchitem){
             return null

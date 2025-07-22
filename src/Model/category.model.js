@@ -12,7 +12,7 @@ const categoryschema = new Schema({
         required: [true , "description missing"],
         trim: true
     },
-    product:[{
+    product: [{
         type: Schema.Types.ObjectId,
         ref: "product"
     }],
