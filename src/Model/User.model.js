@@ -23,11 +23,9 @@ const userschema = new Schema({
     },
     Telephone:{
         type: String,
-        required: [true, "Telephone Number Is missing"]
     },
     Adress1:{
         type: String,
-        required: [true , "Adress1 Missing!!"],
     },
     Adress2:{
         type: String,
@@ -36,7 +34,6 @@ const userschema = new Schema({
 
     City:{
         type: String,
-        required: [true , "City Missing!!"], 
     },
 
     Postcode:{
