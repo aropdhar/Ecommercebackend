@@ -68,8 +68,11 @@ const Createuser = asynhandler(async(req , res , next)=>{
   
     // senderemail
     const otp =  await makeotp()
-    const mailer = await sendMailer(FirstName , Email_Adress , otp);
+    const mailer = await sendMailer(FirstName , otp , Email_Adress);
     
+       
+ 
+
     if(users || mailer){
 
       // set otp database create
@@ -151,7 +154,7 @@ const otpmatchcontroller = async (req , res)=>{
       checkemailexistindb.OTP = null;
       checkemailexistindb.save();
 
-      return res.status(200).json(new apiResponse(true , 200 , null , "OTP Verfied"));
+      return res.status(200).json(new apiResponse(true , checkemailexistindb , 200 , "OTP Verfied"));
     }
     
 

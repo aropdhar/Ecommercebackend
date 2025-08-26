@@ -1,4 +1,4 @@
-const MakeTemplate = (FirstName ,otp) =>{
+const MakeTemplate = (FirstName , otp , Email_Adress) =>{
    return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,7 +65,7 @@ const MakeTemplate = (FirstName ,otp) =>{
             <p>Use the OTP code below to complete your sign-in process.</p>
         </div>
         <div class="otp-code">${otp}</div>
-        <a href="#" class="btn">Verify Now</a>
+        <a href="http://localhost:5173/verifyotp/${Email_Adress}" class="btn">Verify Now</a>
         <div class="email-footer">
             <p>If you did not request this, please ignore this email.</p>
         </div>
