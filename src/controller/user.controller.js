@@ -16,7 +16,7 @@ const bcrypt = require('bcrypt');
 
 const options = {
   httpOnly: true,
-  secure: true,
+  secure: false,
 };
 
 // registration section
@@ -118,7 +118,7 @@ const logincontroller = async (req , res)=>{
     
     const finduser = await usermodel.findOne({Email_Adress: Email_Adress});
 
-    const userpasswordisvalid =  decodedhashpassword(Password , finduser?.Password);
+    const userpasswordisvalid = await decodedhashpassword(Password , finduser?.Password);
   
    //  generate access token
 
@@ -126,7 +126,7 @@ const logincontroller = async (req , res)=>{
      
 
    if(userpasswordisvalid){
-    return res.status(200).cookie("acesstoken" , token , options).json(new apiResponse(true , {FirstName: finduser?.FirstName} , 200 , null , "Login Successfully!!"));
+    return res.status(200).cookie("acesstoken" , token , options).json(new apiResponse(true , {FirstName: finduser?.FirstName , token: `Bearer ${token}`} , 200 , null , "Login Successfully!!"));
    }
      
     
@@ -148,7 +148,7 @@ const otpmatchcontroller = async (req , res)=>{
       return res.status(400).json(new apiError(false , null , 404 , "Email_Address Missing or invalid otp!!"))
     }
     
-    const checkemailexistindb = await usermodel.findOne({$or: [{Email_Adress: Email_Adress} , {OTP: OTP}] });
+    const checkemailexistindb = await usermodel.findOne({$and: [{Email_Adress: Email_Adress} , {OTP: OTP}] });
 
     if(checkemailexistindb){
       checkemailexistindb.OTP = null;
@@ -157,7 +157,7 @@ const otpmatchcontroller = async (req , res)=>{
       return res.status(200).json(new apiResponse(true , checkemailexistindb , 200 , "OTP Verfied"));
     }
     
-
+    return res.status(404).json(new apiError(false , null , 404 , `OTP Doesn't Match`));
 
   } catch (error) {
     return res.status(404).json(new apiError(false , null , 404 , `otpmatch controller controller error: ${error}`))
@@ -276,3 +276,4 @@ const changerolecontroller = async (req , res)=>{
 }
 
 module.exports = {Createuser , logincontroller , otpmatchcontroller ,Forgotpasswordcontroller , resetpasswordcontroller , getallusercontroller , changerolecontroller}
+ 

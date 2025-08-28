@@ -7,7 +7,10 @@ const cors = require('cors')
 
 // all middleware
 
-app.use(cors());
+app.use(cors({
+    origin: ["http://localhost:5173", "http://localhost:5175"],
+    credentials: true, // Allow credentials
+}));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
