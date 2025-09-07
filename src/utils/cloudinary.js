@@ -24,7 +24,7 @@ const uploadcloudinary = async (localfilepath = 'public\\temp\\chatting ui.png')
                 console.log("image unlinksync error" , err);   
             })
     
-          secure_link.push(uploadResult?.secure_url);
+           secure_link.push(uploadResult?.secure_url);
             
             
         }

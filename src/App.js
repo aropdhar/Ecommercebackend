@@ -8,7 +8,7 @@ const cors = require('cors')
 // all middleware
 
 app.use(cors({
-    origin: ["http://localhost:5173", "http://localhost:5175"],
+    origin: ["http://localhost:5173"],
     credentials: true, // Allow credentials
 }));
 app.use(express.json());
