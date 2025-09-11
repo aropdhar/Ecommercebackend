@@ -122,7 +122,7 @@ const logincontroller = async (req , res)=>{
   
    //  generate access token
 
-   const token = await generateAccesToken(Email_Adress);
+   const token = await generateAccesToken({email: Email_Adress , id: finduser?._id});
      
 
    if(userpasswordisvalid){

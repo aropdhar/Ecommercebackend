@@ -69,7 +69,7 @@ const deletesubcategory = async (req , res)=>{
   
           if(searchcatgory){
             searchcatgory.subcategory.pull(deleteitem._id);
-            searchcatgory.save()
+            await searchcatgory.save()
           }else{
             return null
           }

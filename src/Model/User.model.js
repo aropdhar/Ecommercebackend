@@ -73,7 +73,11 @@ const userschema = new Schema({
     },
     avatar:{
         type: String
-    }
+    },
+    cartItem:[{
+        type: Schema.Types.ObjectId,
+        ref: "cart"
+    }]
     
 },
 { timestamps: true }

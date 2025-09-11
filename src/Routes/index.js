@@ -11,6 +11,8 @@ const bestsellingRoute = require('./api/bestselling.Apiroutes.js');
 const flashsaleRoute = require('./api/flashsale.Apiroutes.js');
 const bannerRoute = require('../Routes/api/banner.Apiroutes.js');
 const offerdateRoute = require('../Routes/api/offerdate.Apiroutes.js');
+const cartRoute = require('../Routes/api/cart.Apiroutes.js');
+
 const {apiError} = require('../utils/apiError.js');
 
 
@@ -24,6 +26,7 @@ _.use(process.env.BASE_URL , bestsellingRoute)
 _.use(process.env.BASE_URL , flashsaleRoute)
 _.use(process.env.BASE_URL , bannerRoute)
 _.use(process.env.BASE_URL , offerdateRoute)
+_.use(process.env.BASE_URL , cartRoute)
 _.use(process.env.BASE_URL , (req , res)=>{
     res.status(400).json( new apiError(false , null , 400 , "Api Routes invalid"));
 })

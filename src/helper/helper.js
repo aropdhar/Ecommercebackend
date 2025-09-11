@@ -25,14 +25,11 @@ const decodedhashpassword = async (plainpassword , encryptedpassword)=>{
 
 // generate accesstoken
 
-const generateAccesToken = async (Email_Adress) =>{
+const generateAccesToken = async (payload) =>{
 
     const AccessToken = await  jwt.sign(
-       {
-
-           Email_Adress,
-
-       }, process.env.ACCESS_TOKEN_SECRET, 
+       payload, 
+       process.env.ACCESS_TOKEN_SECRET, 
        
        { expiresIn: process.env.ACCESS_TOKEN_EXPIRE });
    
