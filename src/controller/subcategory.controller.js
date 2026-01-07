@@ -108,4 +108,6 @@ const singlesubcategory = async(req , res)=>{
 
 }
 
+
+
 module.exports = {subcategoryController , getAllsubcategory , deletesubcategory , singlesubcategory}

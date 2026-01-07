@@ -10,9 +10,7 @@ const Dbconnection= async  () =>{
 
     console.log(
         chalk.blue.bgGreenBright.bold(`MongoDB Connected !! DB HOST !! ${(await connectioninfo).connection.host}`)            
-      );    
-    
-
+      );
   } catch (error) {
 
     console.log(chalk.bgRedBright(error));

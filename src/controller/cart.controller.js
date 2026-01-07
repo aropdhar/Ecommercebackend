@@ -1,7 +1,8 @@
 const {apiError} = require('../utils/apiError.js');
 const {apiResponse} = require('../utils/apiResonse.js');
 const {cartModel} = require('../Model/cart.model.js');
-const {usermodel} = require('../Model/User.model.js')
+const {usermodel} = require('../Model/User.model.js');
+
 
 const creatCartController = async(req , res)=>{
   
@@ -92,6 +93,7 @@ const DeleteCart = async(req , res)=>{
     }
 }
 
+
 // update cart item
 
 const UpdateCart = async (req , res)=>{
@@ -118,4 +120,86 @@ const UpdateCart = async (req , res)=>{
     }
 }
 
-module.exports = {creatCartController , GetAllCart , DeleteCart , UpdateCart}
+// increment cart controller
+
+const incrementcart = async (req , res)=>{
+    try {
+        
+        const {id} = req.params;
+
+        const cartincrement = await cartModel.findOne({_id: id});
+
+        cartincrement.quantity += 1;
+        await cartincrement.save()
+        
+        if(!cartincrement){
+            return res.status(400).json(new apiError(false , null , 404 , `cart increment Failed`));
+        }
+
+        return res.status(200).json(new apiResponse(true , cartincrement, 200 , null , "Cart Increment  Successfully!!"))
+
+    } catch (error) {
+        return res.status(400).json(new apiError(false , null , 404 , `increment cart Controller ${error}`));
+    }
+}
+
+// decrement cart controller
+
+const  decrementcart = async (req , res)=>{
+    try {
+        
+      const {id} = req.params;
+
+      const cartdecrement = await cartModel.findOne({_id: id});
+      
+      if(cartdecrement.quantity > 1){
+          cartdecrement.quantity -= 1;
+          await cartdecrement.save()
+      }
+
+     
+      if(!cartdecrement){
+        return res.status(400).json(new apiError(false , null , 404 , `cart decrement failed`));
+      }
+
+      return res.status(200).json(new apiResponse(true , cartdecrement, 200 , null , "Cart Decrement  Successfully!!"))
+
+    } catch (error) {
+        return res.status(400).json(new apiError(false , null , 404 , `Decrement Cart Controller ${error}`));
+    }
+}
+
+// user wise controller 
+
+const cartuserwise = async(req , res)=>{
+    try {
+        
+        const userid = req.user;
+        const AllcartItem = await cartModel.find({user: userid.id}).populate(["product" , 'user']);
+        
+        if(!AllcartItem){
+           return res.status(400).json(new apiError(false , null , 401 , `Cart Not Found`)); 
+        }
+
+        const subtotal = AllcartItem.reduce((initialvalue , item)=>{
+            const {quantity , product} = item;
+            initialvalue.totalAmount += parseFloat(product.price.replace(/,/gi , "")* quantity);
+            initialvalue.quantity += quantity;
+
+            return initialvalue;
+
+        } , {
+            quantity: 0,
+            totalAmount: 0
+        })
+        
+        return res.status(200).json(new apiResponse(true , {cart: AllcartItem , totalprice: subtotal.totalAmount , totalquantity: subtotal.quantity}, 200 , null , "Cart Item  Successfully!!"));
+
+
+    } catch (error) {
+        return res.status(400).json(new apiError(false , null , 404 , `Cart User Wise Controller ${error}`));
+    }
+}
+
+
+module.exports = {creatCartController , GetAllCart , DeleteCart , UpdateCart , incrementcart , decrementcart , cartuserwise}
