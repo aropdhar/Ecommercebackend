@@ -53,4 +53,69 @@ const placeorder = async (req , res) =>{
     }
 }
 
-module.exports = {placeorder}
+// get all order 
+
+const gellAllOrder = async (req , res)=>{
+    try {
+
+         const AllOrder = await ordermodel.find({}).populate({ path: 'user'}).populate({ path: 'cartItem'});
+
+         if(AllOrder){
+            return res.status(200).json(new apiResponse(true , AllOrder , 200 , null , "Cart Item  Successfully!!"));
+         }
+
+         return res.status(400).json(new apiError(false , null , 404 , `All Order Not Found`))
+
+    } catch (error) {
+        return res.status(400).json(new apiError(false , null , 404 , `get All Controller Error: ${error}`))
+    }
+}
+
+
+// get user order
+
+const userorder = async(req , res)=>{
+    try {
+        
+        const userid = req.user;
+        
+        const userbyorder = await ordermodel.find({user: userid?.id});
+
+        if(!userbyorder?.length){
+           return res.status(400).json(new apiError(false , null , 404 , `User Order Not Found`)) 
+        }
+
+        return res.status(200).json(new apiResponse(true , userbyorder, 200 , null , "User Order Item  Successfully!!"));
+        
+    } catch (error) {
+        return res.status(400).json(new apiError(false , null , 404 , `User Order Controller Error: ${error}`))
+    }
+}
+
+// cancel user order
+
+const cancelUserOrder = async(req , res)=>{
+    try {
+        
+        const {orderId} = req.params;
+        const {id} = req.user;
+
+        const cancelorder = await ordermodel.findOne({_id: orderId , user: id});
+        cancelorder.status = "Cancel";
+        await cancelorder.save();
+        
+        
+        if(!cancelorder){
+           return res.status(400).json(new apiError(false , null , 404 , `Cancel User Order Not SuccessFully!!!!`))
+        }
+
+        return res.status(200).json(new apiResponse(true ,cancelorder , 200 , null , "user Order Cancel  Successfully!!"));
+        
+
+        
+    } catch (error) {
+        return res.status(400).json(new apiError(false , null , 404 , `Cancel User Order Controller Error: ${error}`))
+    }
+}
+
+module.exports = {placeorder , gellAllOrder , userorder , cancelUserOrder}

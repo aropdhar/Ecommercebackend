@@ -65,7 +65,7 @@ const orderSchema = new Schema({
     },
     status:{
         type: String,
-        enam: ['pending' , 'processing' , 'delivered' , 'cancel'],
+        enam: ['pending' , 'processing' , 'delivered' , 'Cancel'],
         default: 'pending',
         required: true,
         trim: true
