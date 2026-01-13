@@ -3,6 +3,7 @@ const {apiResponse} = require('../utils/apiResonse.js');
 const {ordermodel} = require('../Model/order.model.js');
 const {cartModel} = require('../Model/cart.model.js');
 const {usermodel} = require('../Model/User.model.js');
+const {invoicemodel} = require('../Model/invoice.model.js')
 const SSLCommerzPayment = require('sslcommerz-lts');
 const store_id = process.env.STORE_ID;
 const store_passwd = process.env.STORE_PASSWORD;
@@ -26,7 +27,7 @@ const placeorder = async (req , res) =>{
         const response = await fetch(`${process.env.BACKEND_URL}/userwisecart` ,{
             headers:{
                 "Content-Type": "application/json",
-                Authorization: bearertoken,
+                 Authorization: bearertoken,
             },
         })
 
@@ -46,19 +47,35 @@ const placeorder = async (req , res) =>{
                 paymentinfo: paymentinfo,
                 subtotal: totalprice,
                 totalquantity: totalquantity
+            }).save();
+
+            // now save invoice to db
+            
+            const invoice = await new invoicemodel({
+               user_id: req.user.id,
+               payment_status: "Pending",
+               delivery_status: "Pending",
+               cus_details: customerinfo,
+               total: totalprice,
+               vat: 2,
+               payable: parseInt((totalprice * 2) / 100),
+               order_id: saveorder._id,
             }).save()
+
             res.json({saveorder: saveorder})
+
         }else if(paymentmathod.toLocaleLowerCase() == "online".toLocaleLowerCase()){
 
             let trans_id = crypto.randomUUID().split('-')[0];
+
             const data = {
                 total_amount: 100,
                 currency: 'BDT',
                 tran_id: `Trans_id${trans_id}`, // use unique tran_id for each api call
-                success_url: 'http://localhost:4000/api/v1/success',
-                fail_url: 'http://localhost:4000/api/v1/fail',
-                cancel_url: 'http://localhost:4000/api/v1/cancel',
-                ipn_url: 'http://localhost:4000/api/v1/ipn',
+                success_url: 'http://localhost:4000/api/v1/success/' + trans_id,
+                fail_url: 'http://localhost:4000/api/v1/fail/' + trans_id,
+                cancel_url: 'http://localhost:4000/api/v1/cancel/' + trans_id,
+                ipn_url: 'http://localhost:4000/api/v1/ipn' + trans_id,
                 shipping_method: 'Courier',
                 product_name: 'Computer.',
                 product_category: 'Electronic',
@@ -86,9 +103,35 @@ const placeorder = async (req , res) =>{
             if(!apiResponse){
                 return res.status(400).json(new apiError(false , null , 404 , `Payment Initialised Error`))
             }
-            console.log(apiResponse.GatewayPageURL);
-            
 
+            // console.log(apiResponse.GatewayPageURL);
+            
+            
+             const saveorder = await new ordermodel({
+                user: userinfo.id,
+                cartItem: cartItemid,
+                customerinfo: customerinfo,
+                paymentinfo: paymentinfo,
+                subtotal: totalprice,
+                totalquantity: totalquantity
+            }).save();
+
+             // now save invoice to db
+            
+            await new invoicemodel({
+               user_id: req.user.id,
+               payment_status: "Pending",
+               delivery_status: "Pending",
+               cus_details: customerinfo,
+               total: totalprice,
+               tran_id: trans_id, 
+               vat: 2,
+               payable: parseInt((totalprice * 2) / 100),
+               order_id: saveorder._id,
+            }).save()
+
+           return res.status(200).json({saveorder: saveorder , payemntURl: apiResponse.GatewayPageURL})
+           
         }
 
     } catch (error) {
