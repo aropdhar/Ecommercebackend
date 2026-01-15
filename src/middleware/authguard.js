@@ -8,6 +8,7 @@ const authguard = async (req , res , next)=>{
         // const token = removebareer?.split('@')[1];
         const cookiestoken = cookie?.split('=')[1];
         
+        
     
         if(token){
             const decoded = jwt.verify(token.trim(), process.env.ACCESS_TOKEN_SECRET);
@@ -20,6 +21,7 @@ const authguard = async (req , res , next)=>{
         }else if(cookiestoken){
             const decoded = jwt.verify(cookiestoken, process.env.ACCESS_TOKEN_SECRET);
             if (decoded) {
+                req.user = decoded;
                 next()
             }
            

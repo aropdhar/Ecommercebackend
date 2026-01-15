@@ -16,7 +16,7 @@ const bcrypt = require('bcrypt');
 
 const options = {
   httpOnly: true,
-  secure: false,
+  secure: true,
 };
 
 // registration section
@@ -126,7 +126,7 @@ const logincontroller = async (req , res)=>{
      
 
    if(userpasswordisvalid){
-    return res.status(200).cookie("acesstoken" , token , options).json(new apiResponse(true , {FirstName: finduser?.FirstName , token: `Bearer ${token}`} , 200 , null , "Login Successfully!!"));
+    return res.status(200).cookie("acesstoken" , token , {httpOnly: true, secure:true, samSite:true}).json(new apiResponse(true , {FirstName: finduser?.FirstName , token: `Bearer ${token}`} , 200 , null , "Login Successfully!!"));
    }
      
     
