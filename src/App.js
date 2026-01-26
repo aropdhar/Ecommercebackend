@@ -17,7 +17,13 @@ app.use(cookieParser());
 app.use(Allroutes);
 
 
-app.listen(process.env.PORT || 3000 , ()=>{
-    console.log(chalk.bgCyanBright(`Server  Connected Port On http://localhost:${process.env.PORT}`));
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(chalk.bgCyanBright(`Server Connected on http://localhost:${PORT}`));
 });
+
+// app.listen(process.env.PORT || 3000 , ()=>{
+//     console.log(chalk.bgCyanBright(`Server  Connected Port On http://localhost:${process.env.PORT}`));
+// });
 

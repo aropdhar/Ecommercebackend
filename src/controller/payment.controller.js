@@ -47,7 +47,7 @@ const failedcontroller = async(req , res)=>{
         order.paymentinfo.ispaid = false;
         await order.save();
         
-        res.redirect(`${process.env.FRONTEND_DOMAIN}/failed`)
+        res.redirect(`${process.env.FRONTEND_DOMAIN}/fail`)
         
     } catch (error) {
         return res.status(400).json(new apiError(false , null , 404 , `Payment Failed Controller Error: ${error}`))
