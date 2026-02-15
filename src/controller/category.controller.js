@@ -2,7 +2,7 @@ const {apiError} = require('../utils/apiError.js');
 const {apiResponse} = require('../utils/apiResonse.js');
 const {categorymodel} = require('../Model/category.model.js')
 const {usermodel} = require('../Model/User.model.js');
-const { EmailChecker } = require('../utils/allchecker.js');
+const { EmailChecker } = require('../utils/AllChecker.js');
 
 const categorycontroller = async (req , res)=>{
     

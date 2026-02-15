@@ -1,7 +1,7 @@
 const {apiError} = require('../utils/apiError.js');
 const {apiResponse} = require('../utils/apiResonse.js');
 const {storemodel} = require('../Model/marchant.model.js')
-const {phonenumberChecker , EmailChecker} = require('../utils/allchecker.js');
+const {phonenumberChecker , EmailChecker} = require('../utils/AllChecker.js');
 const {usermodel} = require('../Model/User.model.js')
 
 const createmarchant = async(req , res)=>{
