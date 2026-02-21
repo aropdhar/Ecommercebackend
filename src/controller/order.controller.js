@@ -15,7 +15,7 @@ const placeorder = async (req , res) =>{
         
         const {customerinfo , paymentinfo} = req.body;
         const userinfo = req.user;
-        const bearertoken = req.headers.authorization;
+        const bearertoken = req.headers.cookie.replace('acesstoken=' , '');
         const {phone, address1 , city , district} = customerinfo;
         const {paymentmathod} = paymentinfo;
         
@@ -27,7 +27,7 @@ const placeorder = async (req , res) =>{
         const response = await fetch(`${process.env.BACKEND_URL}/userwisecart` ,{
             headers:{
                 "Content-Type": "application/json",
-                 Authorization: bearertoken,
+                 Authorization: `Bearer ${bearertoken}`,
             },
         })
 
