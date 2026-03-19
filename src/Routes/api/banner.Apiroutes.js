@@ -1,7 +1,7 @@
 const express = require('express')
 const {Router} = express;
 const _ = Router();
-const {bannerController , getAllBannercontroller , updateBanner} = require('../../controller/banner.controller.js')
+const {bannerController , getAllBannercontroller , updateBanner , deletebanner } = require('../../controller/banner.controller.js')
 const {upload} = require('../../middleware/multer.middleware.js')
 
 _.route("/banner").post(upload.fields([{name: "image" , maxCount: 1}]),bannerController).get(getAllBannercontroller);
@@ -9,5 +9,6 @@ _.route("/banner").post(upload.fields([{name: "image" , maxCount: 1}]),bannerCon
 
 _.route("/bannerupdate/:id").put(upload.fields([{name: "image" , maxCount: 1}]),updateBanner);
 
+_.route('/deletebanner/:id').delete(deletebanner)
 
 module.exports = _;
