@@ -23,7 +23,18 @@ app.listen(PORT, () => {
   console.log(chalk.bgCyanBright(`Server Connected on http://localhost:${PORT}`));
 });
 
+
+
 // app.listen(process.env.PORT || 3000 , ()=>{
 //     console.log(chalk.bgCyanBright(`Server  Connected Port On http://localhost:${process.env.PORT}`));
 // });
 
+// ✅ localhost এর জন্য
+// if (process.env.NODE_ENV !== "production") {
+//   const PORT = process.env.PORT || 3000;
+//   app.listen(PORT, () => {
+//     console.log(chalk.bgCyanBright(`Server running on http://localhost:${PORT}`));
+//   });
+// }
+// ✅ Vercel এর জন্য
+// module.exports = app;
