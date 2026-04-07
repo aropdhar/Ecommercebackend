@@ -37,4 +37,4 @@ const adminscontroller = async (req , res)=>{
     }
 }
 
-module.exports = {adminscontroller}
+module.exports = {adminscontroller} 
