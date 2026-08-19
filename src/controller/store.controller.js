@@ -8,7 +8,7 @@ const createmarchant = async(req , res)=>{
    
     try {
         
-       const {email, phoneNumber , storename, users} = req.body;
+       const {email, phoneNumber, storename, users} = req.body;
        
        if(!email || !phoneNumber || !storename || !users){
         return res.status(400).json(new apiError(false , null , 404 , `marchant crendential missing!!`))

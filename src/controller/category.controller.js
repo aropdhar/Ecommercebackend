@@ -81,6 +81,27 @@ const singlecategory = async (req , res)=>{
     }
 }
 
+// delete category 
+
+const deletecategory = async (req , res)=>{
+    try {
+        
+        const {id} = req.params;
+        const deletecategory = await categorymodel.findOneAndDelete({_id: id});
+        
+
+        if(!deletecategory){
+            return res.status(400).json(new apiError(false , null , 501 , `Delete Category Not Found`))
+        }
+
+        return res.status(200).json(new apiResponse(true , deletecategory , 200 , null , "category Deleted Successfully!!"))
+        
+
+    } catch (error) {
+          return res.status(400).json(new apiError(false , null , 501 , `Delete category Error: ${error}`))
+    }
+}
+
 // admin approved category
 
 const approvedcategory = async (req , res)=>{
@@ -122,4 +143,4 @@ const approvedcategory = async (req , res)=>{
     }
 }
 
-module.exports = {categorycontroller , getallcategory , singlecategory , approvedcategory}
+module.exports = {categorycontroller , getallcategory , singlecategory , approvedcategory , deletecategory}
