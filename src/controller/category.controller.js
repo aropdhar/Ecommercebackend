@@ -41,7 +41,6 @@ const categorycontroller = async (req , res)=>{
 
 // get all category 
 
-
 const getallcategory = async (req , res)=>{
    
     try {
