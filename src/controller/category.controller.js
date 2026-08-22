@@ -101,6 +101,20 @@ const deletecategory = async (req , res)=>{
     }
 }
 
+
+// update category
+
+const updatecategory = async (req , res)=>{
+    try {
+        const {id} = req.params;;
+
+        console.log(id);
+        
+    } catch (error) {
+        return res.status(400).json(new apiError(false , null , 501 , `Update  category Error: ${error}`))
+    }
+}
+
 // admin approved category
 
 const approvedcategory = async (req , res)=>{
@@ -142,4 +156,4 @@ const approvedcategory = async (req , res)=>{
     }
 }
 
-module.exports = {categorycontroller , getallcategory , singlecategory , approvedcategory , deletecategory}
+module.exports = {categorycontroller, getallcategory, singlecategory, approvedcategory, deletecategory, updatecategory}
