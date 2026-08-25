@@ -106,9 +106,22 @@ const deletecategory = async (req , res)=>{
 
 const updatecategory = async (req , res)=>{
     try {
-        const {id} = req.params;;
+        const {id} = req.params;
+        const updatecategory = await categorymodel.findOneAndUpdate({_id: id},
+            {
+                ...req.body
+            },{
+                new: true
+            }
+        );
+        
+        if(!updatecategory){
+             return res.status(404).json(new apiError(false , null , 501 , `Update category Failed`))
+        }
 
-        console.log(id);
+        return res.status(200).json(new apiResponse(true , updatecategory , 200 , null , "category Update Successfully!!"))
+        
+        
         
     } catch (error) {
         return res.status(400).json(new apiError(false , null , 501 , `Update  category Error: ${error}`))
