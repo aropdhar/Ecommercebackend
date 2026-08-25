@@ -95,21 +95,21 @@ const updateBanner = async(req,res)=>{
 // delete banner controller
 const deletebanner = async(req , res)=>{
     try {
-         const {id} = req.params;
+        const {id} = req.params;
 
-          const banner = await bannerModel.findById(id);
+        const banner = await bannerModel.findById(id);
 
-          if (!banner) {
-             return res.status(404).json({ message: "Not found" });
-          }
+        if (!banner) {
+            return res.status(400).json(new apiError(false , null , 404 , `Banner Not Found`));
+        }
 
-          await deleteCloudinaryAssets(banner.image);
-         
-         const deletebanner = await bannerModel.findOneAndDelete({_id: id});
+        await deleteCloudinaryAssets(banner.image);
         
-         if(deletebanner){
-            return res.status(200).json(new apiResponse(true , deletebanner , 200 , null , "Banner Delete Successfully!!"));
-         }
+        const deletebanner = await bannerModel.findOneAndDelete({_id: id});
+    
+        if(deletebanner){
+        return res.status(200).json(new apiResponse(true , deletebanner ,  200 , null , "Banner Delete Successfully!!"));
+        }
          
     } catch (error) {
         return res.status(400).json(new apiError(false , null , 404 , `Delete Banner controller  Error: ${error}`))
