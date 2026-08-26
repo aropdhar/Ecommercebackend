@@ -11,6 +11,12 @@ const subcategoryController = async (req , res)=>{
      if(!title || !description || !category){
       return res.status(400).json(new apiError(false , null , 404 , `sub category crendential missing!!`))
      }
+     
+     const existsubcategory = await subcategorymodel.find({title: title});
+     
+     if(existsubcategory?.length){
+          return res.status(404).json(new apiError(false , null , 404 , `${existsubcategory[0]?.title} Title Already Exist`))
+     }
 
      const creatsubcategory = await new subcategorymodel({
         title , description , category
