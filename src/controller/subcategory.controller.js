@@ -52,12 +52,15 @@ const subcategoryController = async (req , res)=>{
 const getAllsubcategory =  async (req , res)=>{
    try {
       const allsubcategory = await subcategorymodel.find().populate('category');
+
       if(allsubcategory?.length){
-        return res.status(200).json(new apiResponse(true,allsubcategory,200,null,"all Sub Category  sucesfully!!!"));
+
+        return res.status(200).json(new apiResponse(true, allsubcategory, 200, null, "all Sub Category  sucesfully!!!"));
+
       }
       
    } catch (error) {
-    return res.status(400).json(new apiError(false , null , 404 , `getAllsubcategory Controller Error: ${error}`))
+      return res.status(400).json(new apiError(false , null , 404 `getAllsubcategory Controller Error: ${error}`))
    }
 }
 
@@ -76,11 +79,9 @@ const deletesubcategory = async (req , res)=>{
           if(searchcatgory){
             searchcatgory.subcategory.pull(deleteitem._id);
             await searchcatgory.save()
-          }else{
-            return null
+
+            return res.status(200).json(new apiResponse(true, deleteitem, 200, null, "SubCategory Deleted Successfully!!!"));
           }
-       }else{
-          return null
        }
        
 
@@ -114,6 +115,18 @@ const singlesubcategory = async(req , res)=>{
 
 }
 
+// update subcategory
 
+const updatesubcategory = async(req , res)=>{
+   try {
+      const {id} = req.params;
+      const updateitem = await subcategorymodel.findById({_id: id});
 
-module.exports = {subcategoryController , getAllsubcategory , deletesubcategory , singlesubcategory}
+      console.log(updateitem);
+      
+   } catch (error) {
+      return res.status(400).json(new apiError(false , null , 404 , `update subcategory Controller Error: ${error}`))
+   }
+}
+
+module.exports = {subcategoryController, getAllsubcategory, deletesubcategory, singlesubcategory, updatesubcategory}
