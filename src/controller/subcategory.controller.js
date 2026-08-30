@@ -120,9 +120,36 @@ const singlesubcategory = async(req , res)=>{
 const updatesubcategory = async(req , res)=>{
    try {
       const {id} = req.params;
-      const updateitem = await subcategorymodel.findById({_id: id});
+      const {title, description, category} = req.body;
+      const updateitem = await subcategorymodel.findById(id);
+      
+      if(!updateitem){
+          return res.status(404).json(new apiError(false, null, 404, "Subcategory not found"));
+      }
 
-      console.log(updateitem);
+      if(category && category !== updateitem.category.toString()){
+         const oldcategory =  await categorymodel.findById(updateitem.category);
+          if(oldcategory){
+             oldcategory.subcategory.pull(updateitem._id);
+             await oldcategory.save();
+          }
+
+          const newcategory = await categorymodel.findById(category);
+          if(newcategory){
+              newcategory.subcategory.push(updateitem._id);
+              await newcategory.save();
+          }
+      }
+
+      const subcategoryupdate = await subcategorymodel.findOneAndUpdate({_id: id},{
+            ...(title && {title}),
+            ...(description && {description}),
+            ...(category && {category}),
+         },{
+            new: true
+         })
+         
+         return res.status(200).json(new apiResponse(true,subcategoryupdate,200,null,"Sub Category Updated successfully!!!"));
       
    } catch (error) {
       return res.status(400).json(new apiError(false , null , 404 , `update subcategory Controller Error: ${error}`))
