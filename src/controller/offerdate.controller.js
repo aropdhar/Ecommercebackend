@@ -30,7 +30,7 @@ const offerDatecontroller = async(req , res)=>{
         }).save();
 
         if(offerDateSave){
-            return res.status(200).json(new apiResponse(true,offerDateSave,200,null,"offerDate Create Suc cessfully!!!"));
+            return res.status(200).json(new apiResponse(true,offerDateSave,200,null,"Offer Date Create Successfully!!!"));
         }
 
         return res.status(400).json(new apiError(false , null , 404 , `OfferDate Create Failed!!`));
@@ -55,4 +55,44 @@ const getAllOfferDate = async (req , res)=>{
     }
 }
 
-module.exports = {offerDatecontroller , getAllOfferDate}
+const deleteoffer = async(req , res)=>{
+    try {
+        const {id} = req.params;
+
+        const deleteitem = await offerDateModel.findOneAndDelete({_id: id});
+
+        if(!deleteitem){
+            return res.status(400).json(new apiError(false , null , 404 , `Delete Offer Not Found`))
+        }else{
+            return res.status(200).json(new apiResponse(true,deleteitem,200,null,"Offer Date Deleted Successfully!!!"));
+        }
+        
+
+    } catch (error) {
+        return res.status(400).json(new apiError(false , null , 404 , `Delete Offer Controller Error: ${error}`))
+    }
+}
+
+const updateoffer = async(req , res)=>{
+    try {
+        const {id} = req.params;
+
+        const updateitem = await offerDateModel.findOneAndUpdate({_id: id},
+            {
+                ...req.body
+            },{
+                new: true
+            });
+
+        if(updateitem){
+            return res.status(200).json(new apiResponse(true,updateitem,200,null,"Offer Date Updated Successfully!!!"));
+        }
+        
+        
+    } catch (error) {
+        return res.status(400).json(new apiError(false , null , 404 , `Updated Offer Controller Error: ${error}`))
+    }
+}
+
+
+module.exports = {offerDatecontroller , getAllOfferDate , deleteoffer , updateoffer}
