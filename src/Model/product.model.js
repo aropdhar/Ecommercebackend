@@ -45,12 +45,10 @@ const productSchema = new Schema({
     owner:{
         type: Schema.Types.ObjectId,
         ref: "users",
-        required: true
     },
     storeid: {
        type: Schema.Types.ObjectId,
        ref: "marchant",
-       required: true
     },
     image:[{
         type: String,
