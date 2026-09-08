@@ -21,7 +21,7 @@ const bestsellingcontroller = async(req,res)=>{
         const productAlreadyExist = await bestsellingModel.find({product: product});
 
         if(productAlreadyExist?.length){
-            return res.status(400).json(new apiError(false , null , 404 , `${product} Already Exist!!`))
+            return res.status(404).json(new apiError(false , null , 404 , `${product} Already Exist!!`))
         }
 
         // now database save
@@ -29,7 +29,7 @@ const bestsellingcontroller = async(req,res)=>{
         const bestSellingSave = await bestsellingModel({product}).save()
 
         if(bestSellingSave){
-            return res.status(200).json(new apiResponse(true , bestSellingSave, 200 , null , "bestSellingProDuct Create  Successfully!!"))
+            return res.status(200).json(new apiResponse(true , bestSellingSave, 200 , null , "BestSelling Product Create  Successfully!!"))
         }
 
     } catch (error) {

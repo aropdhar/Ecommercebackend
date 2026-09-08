@@ -88,7 +88,7 @@ const getAllProduct = async(req , res)=>{
           return res.status(200).json(new apiResponse(true,getAllProduct,200,null,"Product Save Successfully!!!"));
         }
       }else{
-        return res.status(200).json(new apiResponse(true,JSON.parse(value),200,null,"Product Save Successfully!!!"));
+        return res.status(200).json(new apiResponse(true,JSON.parse(value),200,null,"Get All Product Successfully!!!"));
       }
 
 
