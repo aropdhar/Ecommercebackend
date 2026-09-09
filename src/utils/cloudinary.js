@@ -43,20 +43,25 @@ const uploadcloudinary = async (localfilepath = 'public\\temp\\chatting ui.png')
 // delete cloudinary
 
 const deleteCloudinaryAssets = async(imagepath)=>{
-
+    const results = [];
     try {
          
         for(let cloudinarName of imagepath){
             const allarr = (cloudinarName.split('/'));
             const cloudimagename = (allarr[allarr?.length - 1].split('.')[0]);
-            const deleteitem = await cloudinary.api
-            .delete_resources(cloudimagename || ['entkozxzcn7zjhx6bjdb'], 
-                { type: 'upload', resource_type: 'image' })        
+            const deleteitem = await cloudinary.api.delete_resources(
+                [cloudimagename],
+                { type: 'upload', resource_type: 'image' }
+            );    
+
+            results.push(deleteitem)
         }
         
     } catch (error) {
         console.log("delete Cloudinary Error:" , error);
     }
+
+    return results;
 }
 
 module.exports = {uploadcloudinary , deleteCloudinaryAssets}

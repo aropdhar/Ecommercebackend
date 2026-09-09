@@ -5,6 +5,7 @@ const { uploadcloudinary , deleteCloudinaryAssets} = require('../utils/cloudinar
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache();
 const {categorymodel} = require('../Model/category.model.js');
+const {bestsellingModel} = require('../Model/bestSelling.model.js')
 
 // product upload 
 
@@ -178,24 +179,31 @@ const searchproductcontroller = async(req , res)=>{
 
 const deleteproductcontroller = async(req , res)=>{
   try {
+
      const {id} = req.params;
      const deletedproduct = await productuser.findOneAndDelete({_id: id});
      
+     if(!deletedproduct){
+        return res.status(404).json(new apiError(false , null , 404 , `Product Not Found`))
+     }
+     
+     if(deletedproduct?.image?.length){
+        await deleteCloudinaryAssets(deletedproduct?.image);
+     }
 
-    if(deletedproduct){
+     
+     const category = await categorymodel.findById(deletedproduct?.category)
+     if(category){
+       category?.product?.pull(deletedproduct?._id)
+       await category.save()
+     }
 
-      const deleteitem = await deleteCloudinaryAssets(deletedproduct?.image);
-      const category = await categorymodel.findById(deletedproduct.category);
+     myCache.del("getAllProduct");
 
-      category.product.pull(deleteitem._id)
-
-      await category.save()
-
-      return res.status(200).json(new apiResponse(true,deletedproduct,200,null,"delete Product Successfully!!!"));
-    }
-
+     return res.status(200).json(new apiResponse(true,deletedproduct,200,null," Product Deleted Successfully!!!"));
+    
   } catch (error) {
-    return res.status(400).json(new apiError(false , null , 404 , `product Not Found`))
+    return res.status(500).json(new apiError(false , null , 500 , `Something Went Wrong ${error}`))
   }
 
 }
