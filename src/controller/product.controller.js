@@ -86,17 +86,17 @@ const getAllProduct = async(req , res)=>{
     
           myCache.set( "getAllProduct",  JSON.stringify(getAllProduct));
     
-          return res.status(200).json(new apiResponse(true,getAllProduct,200,null,"Product Save Successfully!!!"));
+          return res.status(200).json(new apiResponse(true,getAllProduct,200,null,"Get All Product Successfully!!!"));
         }
       }else{
         return res.status(200).json(new apiResponse(true,JSON.parse(value),200,null,"Get All Product Successfully!!!"));
       }
 
 
-    return res.status(400).json(new apiError(false , null , 404 , `getAllProduct not Found`));
+    return res.status(404).json(new apiError(false , null , 404 , `getAllProduct not Found`));
 
   } catch (error) {
-    return res.status(400).json(new apiError(false , null , 404 , `getAllProduct Controller Error: ${error}`))
+    return res.status(500).json(new apiError(false , null , 500 , `getAllProduct Controller Error: ${error}`))
   }
 }
 
@@ -107,30 +107,62 @@ const updateproduct = async (req , res)=>{
     
      const {id} = req.params;
      const image = req.files?.image
-      
+     const {name, description, category, subcategory, price, rating, review } = req.body
+
      let updatedProduct = await productuser.findById(id);
-     let updatedProductobj = {};
+     
+     if(!updatedProduct){
+        return res.status(500).json(new apiError(false , null , 500 , `Product Not Found`))
+     }
+     
+     if(category && category !== updatedProduct?.category?.toString()){
+       const oldcategory = await categorymodel.findById(updatedProduct?.category)
+       if(oldcategory){
+         oldcategory.product.pull(updatedProduct._id)
+         await oldcategory.save()
+       }
+       
+       
+       const newcategory = await categorymodel.findById(category);     
+       if(newcategory){
+         newcategory.product.push(updatedProduct._id)
+         await newcategory.save()
+       }
+       
+      }
+      const updatedProductobj = {
+        ...(name !== undefined && { name }),
+        ...(description !== undefined && { description }),
+        ...(category !== undefined && { category }),
+        ...(subcategory !== undefined && { subcategory }),
+        ...(price !== undefined && { price }),
+        ...(rating !== undefined && { rating }),
+        ...(review !== undefined && { review }),
+      };
 
      if(image){
        await deleteCloudinaryAssets(updatedProduct?.image);
        const imageurl = await uploadcloudinary(image);
-       updatedProductobj = { ...req.body, image: imageurl };
-     }else{
-       updatedProductobj = {...req.body}
+       updatedProductobj.image = imageurl
      }
      
      
      const updateproduct = await productuser.findOneAndUpdate({_id: id} ,
-      {...updatedProductobj},
+      {$set: updatedProductobj},
       {new: true}
      ) 
      
-     if(updateproduct){
-      return res.status(200).json(new apiResponse(true,updateproduct,200,null,"Product Update Successfully!!!"));
-     }
+     if(!updateproduct){
+      return res.status(404).json(new apiError(false , null , 404 , `update product Failure`))
+    }
+
+  // cache invalidation — node-cache থেকে stale list বাদ
+    myCache.del("getAllProduct");
+
+    return res.status(200).json(new apiResponse(true,updateproduct,200,null,"Product Update Successfully!!!"));
 
    } catch (error) {
-    return res.status(400).json(new apiError(false , null , 404 , `updateproduct Controller Error: ${error}`))
+    return res.status(500).json(new apiError(false , null , 500 , `updateproduct Controller Error: ${error}`))
    }
 }
 
@@ -197,6 +229,7 @@ const deleteproductcontroller = async(req , res)=>{
        category?.product?.pull(deletedproduct?._id)
        await category.save()
      }
+     
 
      myCache.del("getAllProduct");
 
