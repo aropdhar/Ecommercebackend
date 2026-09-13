@@ -230,6 +230,10 @@ const deleteproductcontroller = async(req , res)=>{
        await category.save()
      }
      
+     const bestSellingdelete = await bestsellingModel.findOne({product: id});
+     if(bestSellingdelete){
+       await bestsellingModel.findOneAndDelete(bestSellingdelete?._id);
+     }
 
      myCache.del("getAllProduct");
 
