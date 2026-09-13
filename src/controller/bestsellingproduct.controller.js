@@ -45,7 +45,12 @@ const bestsellingcontroller = async(req,res)=>{
 const bestSellingGetAllProduct =  async(req, res)=>{
     try {
  
-        const GetAllbestsellingproduct = await bestsellingModel.find({}).populate("product");
+        const GetAllbestsellingproduct = await bestsellingModel.find({}).populate({
+        path: "product",
+        populate: [
+            { path: "category" },
+        ]
+        });
 
         if(GetAllbestsellingproduct){
             return res.status(200).json(new apiResponse(true , GetAllbestsellingproduct, 200 , null , "Get All bestsellingproduct Successfully!!"))
