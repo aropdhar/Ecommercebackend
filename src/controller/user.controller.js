@@ -117,9 +117,22 @@ const logincontroller = async (req , res)=>{
     }
     
     const finduser = await usermodel.findOne({Email_Adress: Email_Adress});
+    
+    if(!finduser){
+      return res.status(404).json(new apiError(false , null , 404 , `User Not Found`))
+    }
+
+    if(!finduser.userIsVerifid){
+       return res.status(403).json(new apiError(false , null , 403 , `Please verify your email via OTP before login!!`))
+    }
+    
 
     const userpasswordisvalid = await decodedhashpassword(Password , finduser?.Password);
   
+    if(!userpasswordisvalid){
+       return res.status(401).json(new apiError(false , null , 401 , `Invalid Credentials`))
+    }
+
    //  generate access token
 
    const token = await generateAccesToken({email: Email_Adress , id: finduser?._id});
@@ -131,7 +144,7 @@ const logincontroller = async (req , res)=>{
      
     
   } catch (error) {
-    return res.status(404).json(new apiError(false , null , 404 , `logincontroller error: ${error}`))
+    return res.status(500).json(new apiError(false , null , 500 , `logincontroller error: ${error}`))
   }
 }
 
@@ -152,7 +165,8 @@ const otpmatchcontroller = async (req , res)=>{
 
     if(checkemailexistindb){
       checkemailexistindb.OTP = null;
-      checkemailexistindb.save();
+      checkemailexistindb.userIsVerifid = true;
+      await checkemailexistindb.save();
 
       return res.status(200).json(new apiResponse(true , checkemailexistindb , 200 , "OTP Verfied"));
     }
