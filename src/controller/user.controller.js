@@ -135,7 +135,7 @@ const logincontroller = async (req , res)=>{
 
    //  generate access token
 
-   const token = await generateAccesToken({email: Email_Adress , id: finduser?._id});
+   const token = await generateAccesToken({email: Email_Adress , id: finduser?._id , role: "users"});
      
 
    if(userpasswordisvalid){
