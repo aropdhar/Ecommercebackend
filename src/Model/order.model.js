@@ -2,10 +2,13 @@ const mongoose = require('mongoose');
 const { Schema , Types } = mongoose;
 
 const orderSchema = new Schema({
-
+    uniqueId:{
+      type: String,
+      unique: true
+    },
     user:{
-        type: String,
-        required: true
+        type: Types.ObjectId,
+        ref: "users",
     },
     cartItem:[{
        type: Types.ObjectId,

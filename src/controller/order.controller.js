@@ -9,6 +9,7 @@ const store_id = process.env.STORE_ID;
 const store_passwd = process.env.STORE_PASSWORD;
 const is_live = process.env.IS_LIVE == "false" //true for live, false for sandbox
 const crypto = require('crypto');
+const path = require('path');
 
 const placeorder = async (req , res) =>{
     try {
@@ -38,9 +39,15 @@ const placeorder = async (req , res) =>{
             return item._id;
         })
         
+        let trans_id = crypto.randomUUID().split('-')[0];
+        const generateOrderId = () => {
+           return 'FWB' + Math.floor(100000000 + Math.random() * 900000000);
+        };
+
 
         if(paymentmathod.toLocaleLowerCase() == "cash".toLocaleLowerCase()){
             const saveorder = await new ordermodel({
+                uniqueId: generateOrderId(),
                 user: userinfo.id,
                 cartItem: cartItemid,
                 customerinfo: customerinfo,
@@ -56,6 +63,7 @@ const placeorder = async (req , res) =>{
                payment_status: "Pending",
                delivery_status: "Pending",
                cus_details: customerinfo,
+               tran_id: `COD${trans_id}`, 
                total: totalprice,
                vat: 2,
                payable: parseInt((totalprice * 2) / 100),
@@ -66,7 +74,6 @@ const placeorder = async (req , res) =>{
 
         }else if(paymentmathod.toLocaleLowerCase() == "online".toLocaleLowerCase()){
 
-            let trans_id = crypto.randomUUID().split('-')[0];
 
             const data = {
                 total_amount: 100,
@@ -108,6 +115,7 @@ const placeorder = async (req , res) =>{
             
             
              const saveorder = await new ordermodel({
+                uniqueId: generateOrderId(),
                 user: userinfo.id,
                 cartItem: cartItemid,
                 customerinfo: customerinfo,
@@ -124,7 +132,7 @@ const placeorder = async (req , res) =>{
                delivery_status: "Pending",
                cus_details: customerinfo,
                total: totalprice,
-               tran_id: trans_id, 
+               tran_id: `COD${trans_id}`, 
                vat: 2,
                payable: parseInt((totalprice * 2) / 100),
                order_id: saveorder._id,
@@ -144,7 +152,7 @@ const placeorder = async (req , res) =>{
 const gellAllOrder = async (req , res)=>{
     try {
 
-         const AllOrder = await ordermodel.find({}).populate({ path: 'user'}).populate({ path: 'cartItem'});
+         const AllOrder = await ordermodel.find({}).populate('user').populate({ path: 'cartItem', populate: { path: 'product' }});
 
          if(AllOrder){
             return res.status(200).json(new apiResponse(true , AllOrder , 200 , null , "Cart Item  Successfully!!"));
@@ -204,4 +212,22 @@ const cancelUserOrder = async(req , res)=>{
     }
 }
 
-module.exports = {placeorder , gellAllOrder , userorder , cancelUserOrder}
+// single order 
+
+const SingleOrderController = async(req , res)=>{
+    try {
+        const {id} = req.params;
+        const SingleGetOrder = await ordermodel.findById({_id: id}).populate('user').populate({path: 'cartItem' , populate:{path: "product"}});
+
+        if(!SingleGetOrder){
+            return res.status(400).json(new apiError(false , null , 404 , `Single Order  Successfully!!`))
+        }
+
+        return res.status(200).json(new apiResponse(true ,SingleGetOrder , 200 , null , "Single Order  Successfully!!"));
+        
+    } catch (error) {
+        return res.status(400).json(new apiError(false , null , 404 , `Single Order Controller Error: ${error}`))
+    }
+}
+
+module.exports = {placeorder , gellAllOrder , userorder , cancelUserOrder , SingleOrderController}
