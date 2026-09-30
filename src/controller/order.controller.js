@@ -151,14 +151,59 @@ const placeorder = async (req , res) =>{
 
 const gellAllOrder = async (req , res)=>{
     try {
+        
+        const {status , range} = req.query;
 
-         const AllOrder = await ordermodel.find({}).populate('user').populate({ path: 'cartItem', populate: { path: 'product' }});
+        let filter = {}
+        
+        if(status && status !== "all"){
+            filter.status = status;           
+        }
+        
+        if(range && range !== "all"){
+            const today = new Date();
+            
+            
+            let startDate;
 
-         if(AllOrder){
+            if(range === "today"){
+                startDate = new Date(today)
+                
+                startDate.setHours(0, 0, 0, 0)           
+            }
+            else if(range === "this-week"){
+                startDate = new Date(today)
+
+                startDate.setDate(today.getDate() - today.getDay())
+                startDate.setHours(0, 0, 0, 0)           
+            }
+
+            else if(range === "this-month"){
+                startDate = new Date(today.getFullYear(),today.getMonth(),1)
+
+                startDate.setHours(0, 0, 0, 0)
+            }
+            
+            else if(range === "this-year"){
+                startDate = new Date(today.getFullYear(), 0 ,1);
+                startDate.setHours(0, 0, 0, 0)
+            }
+
+            if(startDate){
+                filter.createdAt = {
+                    $gte: startDate,
+                    $lte: today,
+                };
+            }
+        } 
+
+        const AllOrder = await ordermodel.find(filter).populate('user').populate({ path: 'cartItem', populate: { path: 'product' }}).sort({ createdAt: -1 });
+
+        if(AllOrder){
             return res.status(200).json(new apiResponse(true , AllOrder , 200 , null , "Cart Item  Successfully!!"));
          }
 
-         return res.status(400).json(new apiError(false , null , 404 , `All Order Not Found`))
+        return res.status(400).json(new apiError(false , null , 404 , `All Order Not Found`))
 
     } catch (error) {
         return res.status(400).json(new apiError(false , null , 404 , `get All Controller Error: ${error}`))
